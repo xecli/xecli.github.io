@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaveEditors</title>
+  <title>SaveEditors — Xbox 360 Tooling & Research</title>
   <style>
     :root{
       --day-night-cycle:260s;
@@ -838,12 +838,99 @@
       .world-decor{bottom:54px}
       .bike-rider{bottom:46px}
     }
+    /* Portfolio layout */
+    html,body{height:auto;min-height:100%;overflow-x:hidden;overflow-y:auto}
+    body{padding-bottom:0}
+    .page{
+      max-width:1180px;
+      height:auto;
+      min-height:100svh;
+      padding:22px 18px 210px;
+      overflow:visible;
+    }
+    .stack{height:auto;gap:14px}
+    .hero-card{padding:22px 24px;background:linear-gradient(135deg,rgba(9,15,24,.97),rgba(17,31,47,.95))}
+    .hero-card{position:relative;overflow:hidden;border-color:#497696}
+    .hero-card:before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.32;background:linear-gradient(90deg,transparent 49.7%,rgba(94,189,255,.14) 50%,transparent 50.3%),linear-gradient(transparent 49.7%,rgba(94,189,255,.1) 50%,transparent 50.3%);background-size:52px 52px;mask-image:linear-gradient(90deg,transparent 25%,#000)}
+    .hero-card:after{content:"DEVKIT // SAVEEDITORS // 360";position:absolute;right:22px;bottom:16px;color:rgba(113,196,255,.15);font:800 .68rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.18em}
+    .hero-topline{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:18px}
+    .eyebrow{margin:0;color:#83c9ff;font-size:.76rem;font-weight:800;letter-spacing:.16em;text-transform:uppercase}
+    .hero-status{display:inline-flex;align-items:center;gap:8px;color:#b9c9d8;font-size:.78rem;font-weight:650}
+    .hero-status:before{content:"";width:8px;height:8px;border-radius:50%;background:#70d68b;box-shadow:0 0 0 4px rgba(112,214,139,.12)}
+    .hero-card h1{font-size:clamp(2.1rem,6vw,4.4rem);line-height:.96;letter-spacing:-.045em;margin:0 0 12px}
+    .hero-card .lead{max-width:760px;min-height:3.2em;margin:0;color:#cbd8e6;font-size:clamp(1rem,1.8vw,1.2rem);line-height:1.6}
+    .hero-actions,.project-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}
+    .signal-strip{display:flex;flex-wrap:wrap;gap:7px 18px;margin-top:18px;padding-top:13px;border-top:1px dashed #2e5068;color:#7898ad;font:700 .66rem/1.4 ui-monospace,SFMono-Regular,Consolas,monospace;text-transform:uppercase;letter-spacing:.06em}
+    .signal-strip b{color:#75dca0;font-weight:800}
+    .button-link{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:0 15px;border:1px solid #3b5872;border-radius:10px;color:#eaf5ff;text-decoration:none;font-size:.84rem;font-weight:750;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+    .button-link:hover{transform:translateY(-2px);border-color:#79bced;background:#172b3e}
+    .button-link.primary{border-color:#54a9e8;background:#1670ae;color:#fff}
+    .button-link.primary:hover{background:#2084c8}
+    .section-heading{display:flex;align-items:end;justify-content:space-between;gap:18px;margin-bottom:14px}
+    .section-heading h2{margin:0;font-size:1.05rem;letter-spacing:.04em}
+    .section-heading p{margin:0;color:#91a4b8;font-size:.78rem}
+    .flagship-card{padding:20px 22px;background:linear-gradient(145deg,rgba(10,20,31,.98),rgba(14,36,51,.96));border-color:#47728f}
+    .flagship-layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(230px,.7fr);gap:26px;align-items:center}
+    .project-kicker{color:#74c6ff;font-size:.75rem;font-weight:800;letter-spacing:.13em;text-transform:uppercase}
+    .flagship-card h2{margin:7px 0 8px;font-size:clamp(1.8rem,4vw,2.8rem);letter-spacing:-.035em}
+    .flagship-copy{margin:0;color:#c4d3e1;line-height:1.65;max-width:720px}
+    .project-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:16px}
+    .project-tag{padding:6px 9px;border:1px solid #39566f;border-radius:999px;color:#a9c7dc;background:rgba(11,24,36,.6);font-size:.7rem;font-weight:700}
+    .flagship-metrics{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+    .metric{padding:13px;border:1px solid #2f5169;border-radius:12px;background:rgba(5,14,22,.55)}
+    .metric strong{display:block;color:#f2f8fd;font-size:1.05rem}
+    .metric span{display:block;margin-top:3px;color:#89a4b8;font-size:.68rem;line-height:1.35}
+    .terminal{overflow:hidden;border:1px solid #396b86;border-radius:14px;background:#050a0e;box-shadow:0 18px 40px rgba(0,0,0,.3),inset 0 0 36px rgba(38,167,238,.04);font:500 .72rem/1.65 ui-monospace,SFMono-Regular,Consolas,monospace}
+    .terminal-bar{display:flex;align-items:center;gap:6px;padding:9px 11px;border-bottom:1px solid #253d4e;background:#0d1720;color:#7792a5}
+    .terminal-dot{width:8px;height:8px;border-radius:50%;background:#ff6f6f}.terminal-dot:nth-child(2){background:#ffd166}.terminal-dot:nth-child(3){background:#65d88a}
+    .terminal-title{margin-left:5px;font-size:.62rem;letter-spacing:.08em}
+    .terminal-body{padding:14px 15px 16px;min-height:205px;color:#9fc0d4}
+    .terminal-line{display:block}.terminal-prompt{color:#62d4ff}.terminal-ok{color:#70df9a}.terminal-value{color:#eaf6ff}.terminal-muted{color:#5f7b8f}
+    .terminal-cursor{display:inline-block;width:7px;height:1.05em;margin-left:3px;background:#70df9a;vertical-align:-.15em;animation:blink 1s steps(1) infinite}
+    @keyframes blink{50%{opacity:0}}
+    .milestone-section,.editor-card{padding:18px 20px}
+    .milestone-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+    .milestone-card{position:relative;display:flex;flex-direction:column;min-height:176px;padding:15px;overflow:hidden;border:1px solid #2c4255;border-radius:13px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+    .milestone-card:before{content:attr(data-pr);position:absolute;right:-5px;top:-13px;color:rgba(108,193,248,.07);font:900 4.6rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.08em}
+    .milestone-card:after{content:"MERGED";position:absolute;right:12px;bottom:10px;padding:3px 5px;border:1px solid rgba(112,223,154,.26);border-radius:4px;color:rgba(112,223,154,.55);font:900 .5rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;transform:rotate(-4deg)}
+    .milestone-card:hover{transform:translateY(-3px);border-color:#65a9d7;background:#11283a}
+    .milestone-label{color:#75c3fa;font-size:.68rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+    .milestone-card h3{margin:8px 0 7px;font-size:1.02rem}
+    .milestone-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
+    .milestone-proof{margin-top:auto;padding-top:12px;color:#dceaf6;font-size:.7rem;font-weight:750}
+    .milestone-card:nth-child(2){border-top-color:#a889ff}.milestone-card:nth-child(2) .milestone-label{color:#bba6ff}.milestone-card:nth-child(3){border-top-color:#ffbe73}.milestone-card:nth-child(3) .milestone-label{color:#ffc785}.milestone-card:nth-child(4){border-top-color:#68dda0}.milestone-card:nth-child(4) .milestone-label{color:#76e4aa}
+    .support-strip{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:14px 18px}
+    .support-strip strong{display:block;font-size:.9rem}
+    .support-strip span{display:block;margin-top:3px;color:#98acbd;font-size:.73rem}
+    .editor-card #editorList{max-height:350px}
+    .scene{position:fixed}
+    .bike-rider{position:fixed}
+    @media (max-width:900px){
+      .flagship-layout{grid-template-columns:1fr}
+      .milestone-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .flagship-metrics{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
     @media (max-width:640px){
       html,body{overflow:auto}
       body{overflow-x:hidden}
       .page{height:auto;min-height:100svh;overflow:visible}
       .stack{height:auto}
       #editorList{max-height:clamp(240px, 48svh, 440px)}
+      .page{padding:12px 10px 170px}
+      .hero-card,.flagship-card,.milestone-section,.editor-card{padding:16px}
+      .hero-topline{align-items:flex-start;flex-direction:column;margin-bottom:14px}
+      .hero-card h1{font-size:2.55rem}
+      .milestone-grid{grid-template-columns:1fr}
+      .milestone-card{min-height:150px}
+      .flagship-metrics{grid-template-columns:1fr 1fr}
+      .support-strip{grid-template-columns:1fr}
+      .support-strip .button-link{width:100%}
+      .section-heading{align-items:flex-start;flex-direction:column;gap:4px}
+      .editor-card #editorList{max-height:none;overflow:visible;gap:8px}
+      .editor-row{min-height:0;padding:10px;align-items:flex-start;flex-direction:column}
+      .editor-main{width:100%;gap:7px}
+      .editor-meta{justify-content:flex-start;text-align:left}
+      .hero-card:after{display:none}
     }
     @media (min-width:860px){
       #editorList{columns:2}
@@ -866,9 +953,13 @@
   <div class="sky-effects" id="skyEffects" aria-hidden="true"></div>
   <main class="page">
     <div class="stack">
-      <section class="sheet">
+      <section class="sheet hero-card">
+        <div class="hero-topline">
+          <p class="eyebrow">Xbox 360 tooling · emulator research · save utilities</p>
+          <span class="hero-status">Building in public</span>
+        </div>
         <h1>
-          <a class="title-link" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
+          <a class="title-link" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer" aria-label="SaveEditors on GitHub">
             <svg viewBox="0 0 16 16" aria-hidden="true" focusable="false">
               <path d="M8 0a8 8 0 0 0-2.53 15.59c.4.08.55-.17.55-.39l-.01-1.37c-2.01.44-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.53-.01-.54.63-.01 1.08.58 1.23.82.72 1.21 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.54 7.54 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .22.15.48.55.39A8 8 0 0 0 8 0Z"></path>
             </svg>
@@ -876,47 +967,83 @@
           </a>
         </h1>
         <p class="lead">
-          <span id="leadText" data-fulltext="Welcome to my profile. This is a collection of save editors I've made. Primarily tested with the Windows Xbox Game Pass versions."></span>
+          <span id="leadText" data-fulltext="Independent Xbox 360 tooling and hardware research, built into practical open-source projects and contributed back upstream."></span>
           <span class="type-caret" aria-hidden="true">|</span>
         </p>
+        <div class="hero-actions">
+          <a class="button-link primary" href="https://github.com/SaveEditors/xecli" target="_blank" rel="noopener noreferrer">Explore XeCLI</a>
+          <a class="button-link" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">GitHub profile</a>
+          <a class="button-link" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Support the work</a>
+        </div>
+        <div class="signal-strip" aria-label="Project status"><span><b>●</b> research online</span><span>hardware: xbox 360</span><span>mode: build · test · document</span></div>
       </section>
-      <div class="card-row">
-        <section class="sheet editor-card">
-	          <h2>Save Editors</h2>
-	          <div class="mobile-cta-bar" aria-label="Quick links">
-	            <a class="mobile-cta mobile-cta--feedback" href="https://whispermeter.com/feedback/SaveEditors" target="_blank" rel="noopener noreferrer">Request a tool</a>
-	            <a class="mobile-cta mobile-cta--support" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Support</a>
-	          </div>
+      <section class="sheet flagship-card">
+        <div class="flagship-layout">
+          <div>
+            <span class="project-kicker">Flagship project</span>
+            <h2>XeCLI</h2>
+            <p class="flagship-copy">A terminal-first Xbox 360 RGH/JTAG toolkit for XBDM, JRPC2, FTP, XEX dumping, memory inspection, automation, diagnostics, and repeatable console workflows.</p>
+            <div class="project-tags" aria-label="XeCLI capabilities">
+              <span class="project-tag">XBDM</span><span class="project-tag">JRPC2</span><span class="project-tag">FTP</span><span class="project-tag">XEX tooling</span><span class="project-tag">Automation</span><span class="project-tag">Diagnostics</span>
+            </div>
+            <div class="project-actions">
+              <a class="button-link primary" href="https://github.com/SaveEditors/xecli" target="_blank" rel="noopener noreferrer">View repository</a>
+              <a class="button-link" href="https://github.com/SaveEditors/xecli/wiki" target="_blank" rel="noopener noreferrer">Documentation</a>
+              <a class="button-link" href="https://github.com/SaveEditors/xecli/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+            </div>
+          </div>
+          <div class="terminal" aria-label="XeCLI terminal example">
+            <div class="terminal-bar"><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-dot"></span><span class="terminal-title">XETERMINAL // DEVKIT LINK</span></div>
+            <div class="terminal-body">
+              <span class="terminal-line"><span class="terminal-prompt">rgh&gt;</span> console info</span>
+              <span class="terminal-line terminal-ok">✓ connected <span class="terminal-muted">// XBDM</span></span>
+              <span class="terminal-line"><span class="terminal-value">kernel</span> 2.0.17559.0</span>
+              <span class="terminal-line"><span class="terminal-value">target</span> Xbox 360</span>
+              <span class="terminal-line">&nbsp;</span>
+              <span class="terminal-line"><span class="terminal-prompt">rgh&gt;</span> diagnostics run</span>
+              <span class="terminal-line terminal-ok">✓ transport ✓ memory ✓ storage</span>
+              <span class="terminal-line"><span class="terminal-prompt">rgh&gt;</span><span class="terminal-cursor"></span></span>
+            </div>
+          </div>
+        </div>
+      </section>
+      <section class="sheet milestone-section">
+        <div class="section-heading">
+          <h2>Upstream milestones</h2>
+          <p>Verified contributions merged by established open-source projects</p>
+        </div>
+        <div class="milestone-grid">
+          <a class="milestone-card" data-pr="#1085" href="https://github.com/xenia-canary/xenia-canary/pull/1085" target="_blank" rel="noopener noreferrer">
+            <span class="milestone-label">Emulator research</span><h3>Xenia Canary</h3><p>Xenos GPU reset defaults derived from retail Xbox 360 hardware research.</p><span class="milestone-proof">Merged PR #1085 →</span>
+          </a>
+          <a class="milestone-card" data-pr="#15/17" href="https://github.com/emoose/idaxex/pulls?q=is%3Apr+author%3ASaveEditors" target="_blank" rel="noopener noreferrer">
+            <span class="milestone-label">IDA loader</span><h3>IDA XEX</h3><p>IDA Pro 9.3 loader support and corrected Visual Studio build behavior.</p><span class="milestone-proof">Merged PRs #15 &amp; #17 →</span>
+          </a>
+          <a class="milestone-card" data-pr="#33" href="https://github.com/zeroKilo/XEXLoaderWV/pull/33" target="_blank" rel="noopener noreferrer">
+            <span class="milestone-label">Binary analysis</span><h3>XEXLoaderWV</h3><p>PDB, type-information, and Xbox 360 <code>.pdata</code> parsing fixes.</p><span class="milestone-proof">Merged PR #33 →</span>
+          </a>
+          <a class="milestone-card" data-pr="#51" href="https://github.com/kododake/AABrowser/pull/51" target="_blank" rel="noopener noreferrer">
+            <span class="milestone-label">Interface engineering</span><h3>AABrowser</h3><p>Tabs, themes, scaling, start pages, sessions, and workflow controls.</p><span class="milestone-proof">Merged PR #51 →</span>
+          </a>
+        </div>
+      </section>
+      <section class="sheet editor-card">
+        <div class="section-heading">
+          <h2>Save editors</h2>
+          <p>Browser-based tools for game-save inspection and editing</p>
+        </div>
           <ul id="editorList">
             <li>Loading editors...</li>
           </ul>
           <div class="all-editors-cta">
             <a class="all-editors-btn" href="https://github.com/stars/SaveEditors/lists/game-save-editors" target="_blank" rel="noopener noreferrer">View All Editors</a>
           </div>
-	        </section>
-	        <div class="side-stack">
-	          <section class="sheet side-card">
-	            <div class="request-cta">
-	              <span class="request-cta-label">Need another save editor?</span>
-	              <p class="request-cta-note">Drop the game name, platform, and save-file type so we can queue it faster.</p>
-	              <div class="cta-actions">
-	                <a class="request-cta-link" href="https://whispermeter.com/feedback/SaveEditors" target="_blank" rel="noopener noreferrer">
-	                  Submit a Save Editor Request
-	                </a>
-	              </div>
-	            </div>
-	          </section>
-	          <section class="sheet side-card">
-	            <div class="request-cta">
-	              <span class="request-cta-label">Fuel the Duck <span aria-hidden="true">☕</span></span>
-	              <p class="request-cta-note">If you enjoy the save editors and want to support future development, consider buying Duck a coffee.</p>
-              <div class="cta-actions">
-                <a class="support-cta-link" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Buy Duck a Coffee</a>
-              </div>
-            </div>
-          </section>
-        </div>
-      </div>
+      </section>
+      <section class="sheet support-strip">
+        <div><strong>Have a save format or Xbox 360 tooling problem?</strong><span>Send the game, platform, file type, and a clear description of the workflow.</span></div>
+        <a class="button-link" href="https://whispermeter.com/feedback/SaveEditors" target="_blank" rel="noopener noreferrer">Request a tool</a>
+        <a class="button-link" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Fuel the duck ☕</a>
+      </section>
     </div>
   </main>
 
