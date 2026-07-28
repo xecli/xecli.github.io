@@ -902,15 +902,15 @@
     .pr-section{padding:18px 20px}
     .pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
     .pr-card{position:relative;display:flex;flex-direction:column;min-height:176px;padding:15px;overflow:hidden;border:1px solid #2c4255;border-top-width:2px;border-radius:13px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;border-bottom:1px solid #2c4255;transition:transform .18s ease,border-color .18s ease,background .18s ease}
-    .pr-card:before{content:attr(data-pr);position:absolute;right:-5px;top:-13px;color:rgba(108,193,248,.07);font:900 4.6rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.08em}
+    .pr-card:before{content:attr(data-pr);position:absolute;right:14px;top:14px;color:#6f8aa0;font:800 .74rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em}
     .pr-card:hover{transform:translateY(-3px);border-color:#65a9d7;background:#11283a}
     .pr-label{color:#75c3fa;font-size:.68rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
     .pr-card h3{margin:8px 0 7px;font-size:1.02rem}
     .pr-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
-    .pr-proof{margin-top:auto;padding-top:12px;color:#dceaf6;font-size:.7rem;font-weight:750}
-    .pr-stamp{position:absolute;right:12px;bottom:10px;padding:3px 5px;border-radius:4px;font:900 .5rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;transform:rotate(-4deg)}
-    .pr-stamp--merged{border:1px solid rgba(112,223,154,.3);color:rgba(112,223,154,.62)}
-    .pr-stamp--review{border:1px solid rgba(255,196,112,.34);color:rgba(255,196,112,.68)}
+    .pr-stamp{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;margin-top:auto;padding:5px 10px;border-radius:999px;font:800 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em}
+    .pr-stamp:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
+    .pr-stamp--merged{background:rgba(104,221,160,.16);border:1px solid rgba(104,221,160,.55);color:#8ff0bd}
+    .pr-stamp--review{background:rgba(255,190,115,.16);border:1px solid rgba(255,190,115,.55);color:#ffcf94}
     .pr-card--merged{border-top-color:#68dda0}.pr-card--merged .pr-label{color:#76e4aa}
     .pr-card--review{border-top-color:#ffbe73}.pr-card--review .pr-label{color:#ffc785}
     .pr-loading{margin:0;color:#8aa1b4;font-size:.8rem}
@@ -1227,13 +1227,11 @@
         const cardMod = merged ? "pr-card--merged" : "pr-card--review";
         const stampClass = merged ? "pr-stamp--merged" : "pr-stamp--review";
         const stampText = merged ? "MERGED" : "IN REVIEW";
-        const proof = merged ? `Merged PR #${r.num} →` : `Open PR #${r.num} →`;
         return `<a class="pr-card ${cardMod}" data-pr="#${r.num}" href="${htmlEscape(r.url)}" target="_blank" rel="noopener noreferrer">
           <span class="pr-label">${htmlEscape(r.label)}</span>
           <h3>${htmlEscape(r.name)}</h3>
           <p>${htmlEscape(r.blurb)}</p>
-          <span class="pr-proof">${proof}</span>
-          <span class="pr-stamp ${stampClass}" aria-hidden="true">${stampText}</span>
+          <span class="pr-stamp ${stampClass}">${stampText}</span>
         </a>`;
       }).join("");
     }
