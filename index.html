@@ -615,7 +615,7 @@
       bottom:58px;
       width:86px;
       height:auto;
-      z-index:3;
+      z-index:1;
       pointer-events:none;
       opacity:0;
       filter:drop-shadow(0 4px 6px rgba(0,0,0,.25));
@@ -890,23 +890,23 @@
     @keyframes blink{50%{opacity:0}}
     .milestone-section,.editor-card{padding:18px 20px}
     .milestone-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .milestone-card{position:relative;display:flex;flex-direction:column;min-height:176px;padding:15px;overflow:hidden;border:1px solid #2c4255;border-radius:13px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+    .milestone-card{position:relative;display:flex;flex-direction:column;min-height:0;padding:12px 13px;overflow:hidden;border:1px solid #2c4255;border-radius:12px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;transition:transform .18s ease,border-color .18s ease,background .18s ease}
     .milestone-card{border-top-width:2px;align-items:center;text-align:center}
     .milestone-card:after{content:"\25CF  MERGED";margin-top:auto;align-self:center;display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:rgba(104,221,160,.16);border:1px solid rgba(104,221,160,.55);color:#8ff0bd;font:800 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em}
     .milestone-card:hover{transform:translateY(-3px);border-color:#65a9d7;background:#11283a}
     .milestone-label{color:#75c3fa;font-size:.68rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
-    .milestone-card h3{margin:8px 0 4px;font-size:1.02rem}
-    .card-num{margin:0 0 8px;color:#8aa1b4;font:800 .8rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em}
+    .milestone-card h3{margin:6px 0 3px;font-size:.98rem}
+    .card-num{margin:0 0 6px;color:#8aa1b4;font:800 .74rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em}
     .milestone-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
     .milestone-proof{display:none}
     .milestone-card:nth-child(2){border-top-color:#a889ff}.milestone-card:nth-child(2) .milestone-label{color:#bba6ff}.milestone-card:nth-child(3){border-top-color:#ffbe73}.milestone-card:nth-child(3) .milestone-label{color:#ffc785}.milestone-card:nth-child(4){border-top-color:#68dda0}.milestone-card:nth-child(4) .milestone-label{color:#76e4aa}.milestone-card:nth-child(5){border-top-color:#ff9ec7}.milestone-card:nth-child(5) .milestone-label{color:#ffb3d4}.milestone-card:nth-child(6){border-top-color:#7fd8ff}.milestone-card:nth-child(6) .milestone-label{color:#9fe1ff}
     .pr-section{padding:18px 20px}
     .pr-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
-    .pr-card{position:relative;display:flex;flex-direction:column;min-height:176px;padding:15px;overflow:hidden;border:1px solid #2c4255;border-top-width:2px;border-radius:13px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;border-bottom:1px solid #2c4255;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+    .pr-card{position:relative;display:flex;flex-direction:column;min-height:0;padding:12px 13px;overflow:hidden;border:1px solid #2c4255;border-top-width:2px;border-radius:12px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;border-bottom:1px solid #2c4255;transition:transform .18s ease,border-color .18s ease,background .18s ease}
     .pr-card{align-items:center;text-align:center}
     .pr-card:hover{transform:translateY(-3px);border-color:#65a9d7;background:#11283a}
     .pr-label{color:#75c3fa;font-size:.68rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
-    .pr-card h3{margin:8px 0 4px;font-size:1.02rem}
+    .pr-card h3{margin:6px 0 3px;font-size:.98rem}
     .pr-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
     .pr-stamp{display:inline-flex;align-items:center;gap:6px;align-self:center;margin-top:auto;padding:5px 10px;border-radius:999px;font:800 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em}
     .pr-stamp:before{content:"";width:7px;height:7px;border-radius:50%;background:currentColor}
