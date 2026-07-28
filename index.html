@@ -899,6 +899,21 @@
     .milestone-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
     .milestone-proof{margin-top:auto;padding-top:12px;color:#dceaf6;font-size:.7rem;font-weight:750}
     .milestone-card:nth-child(2){border-top-color:#a889ff}.milestone-card:nth-child(2) .milestone-label{color:#bba6ff}.milestone-card:nth-child(3){border-top-color:#ffbe73}.milestone-card:nth-child(3) .milestone-label{color:#ffc785}.milestone-card:nth-child(4){border-top-color:#68dda0}.milestone-card:nth-child(4) .milestone-label{color:#76e4aa}
+    .pr-section{padding:18px 20px}
+    .pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+    .pr-card{position:relative;display:flex;flex-direction:column;min-height:176px;padding:15px;overflow:hidden;border:1px solid #2c4255;border-top-width:2px;border-radius:13px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;border-bottom:1px solid #2c4255;transition:transform .18s ease,border-color .18s ease,background .18s ease}
+    .pr-card:before{content:attr(data-pr);position:absolute;right:-5px;top:-13px;color:rgba(108,193,248,.07);font:900 4.6rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.08em}
+    .pr-card:hover{transform:translateY(-3px);border-color:#65a9d7;background:#11283a}
+    .pr-label{color:#75c3fa;font-size:.68rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
+    .pr-card h3{margin:8px 0 7px;font-size:1.02rem}
+    .pr-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
+    .pr-proof{margin-top:auto;padding-top:12px;color:#dceaf6;font-size:.7rem;font-weight:750}
+    .pr-stamp{position:absolute;right:12px;bottom:10px;padding:3px 5px;border-radius:4px;font:900 .5rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;transform:rotate(-4deg)}
+    .pr-stamp--merged{border:1px solid rgba(112,223,154,.3);color:rgba(112,223,154,.62)}
+    .pr-stamp--review{border:1px solid rgba(255,196,112,.34);color:rgba(255,196,112,.68)}
+    .pr-card--merged{border-top-color:#68dda0}.pr-card--merged .pr-label{color:#76e4aa}
+    .pr-card--review{border-top-color:#ffbe73}.pr-card--review .pr-label{color:#ffc785}
+    .pr-loading{margin:0;color:#8aa1b4;font-size:.8rem}
     .support-strip{display:grid;grid-template-columns:1fr auto auto;gap:14px;align-items:center;padding:14px 18px}
     .support-strip strong{display:block;font-size:.9rem}
     .support-strip span{display:block;margin-top:3px;color:#98acbd;font-size:.73rem}
@@ -1027,6 +1042,15 @@
           </a>
         </div>
       </section>
+      <section class="sheet pr-section">
+        <div class="section-heading">
+          <h2>Recent upstream work</h2>
+          <p>Live pull-request status across major open-source projects — in review now, cards flip to merged automatically</p>
+        </div>
+        <div class="pr-grid" id="prGrid">
+          <p class="pr-loading">Loading contribution status…</p>
+        </div>
+      </section>
       <section class="sheet support-strip">
         <div><strong>Build with us</strong><span>Request a tool or support continued Xbox 360 research and open-source development.</span></div>
         <a class="button-link" href="https://whispermeter.com/feedback/SaveEditors" target="_blank" rel="noopener noreferrer">Request a tool</a>
@@ -1124,6 +1148,94 @@
       } catch {
         return { date: fallback || "", ts: 0 };
       }
+    }
+
+    const contributions = [
+      { repo: "rommapp/romm",        num: 3945,  name: "RomM",      label: "ROM library",         blurb: "Surface empty platforms in the platform index.",         fallback: "merged" },
+      { repo: "phaserjs/phaser",     num: 7343,  name: "Phaser",    label: "Web game engine",     blurb: "Preserve global loader credentials across asset loads.", fallback: "review" },
+      { repo: "phaserjs/phaser",     num: 7342,  name: "Phaser",    label: "Web game engine",     blurb: "Fix ScaleManager scroll bounds after page scrolling.",   fallback: "review" },
+      { repo: "OpenRCT2/OpenRCT2",   num: 26825, name: "OpenRCT2",  label: "Simulation engine",   blurb: "Fix splash boats paint recursion.",                      fallback: "review" },
+      { repo: "libretro/RetroArch",  num: 19256, name: "RetroArch", label: "Libretro / emulation", blurb: "Fix ZIP member selection when loading content.",         fallback: "review" },
+      { repo: "xenia-project/xenia", num: 2357,  name: "Xenia",     label: "Xbox 360 emulation",  blurb: "Handle content deletion errors in XAM.",                 fallback: "review" },
+      { repo: "bfirsh/jsnes",        num: 785,   name: "JSNES",     label: "NES emulation",       blurb: "Fix SUROM PRG bank selection.",                          fallback: "review" },
+      { repo: "emoose/idaxex",       num: 19,    name: "IDA XEX",   label: "IDA loader",          blurb: "Update the loader for IDA Pro 9.4.",                     fallback: "review" }
+    ];
+
+    const prStatusCacheKey = "saveeditors-pr-status-v1";
+    const prStatusTtlMs = 30 * 60 * 1000;
+
+    function readPrStatusCache() {
+      try {
+        return JSON.parse(localStorage.getItem(prStatusCacheKey) || "{}") || {};
+      } catch {
+        return {};
+      }
+    }
+
+    function writePrStatusCache(cache) {
+      try {
+        localStorage.setItem(prStatusCacheKey, JSON.stringify(cache));
+      } catch {
+        // ignore cache failures
+      }
+    }
+
+    async function fetchPrStatus(item) {
+      const cacheId = `${item.repo}#${item.num}`;
+      const webUrl = `https://github.com/${item.repo}/pull/${item.num}`;
+      const cache = readPrStatusCache();
+      const cached = cache[cacheId];
+      if (cached && cached.status && Date.now() - cached.ts < prStatusTtlMs) {
+        return { status: cached.status, url: cached.url || webUrl };
+      }
+      try {
+        const res = await fetch(`https://api.github.com/repos/${item.repo}/pulls/${item.num}`, {
+          headers: { Accept: "application/vnd.github+json" }
+        });
+        if (!res.ok) throw new Error("pr status request failed");
+        const pr = await res.json();
+        let status;
+        if (pr.merged) status = "merged";
+        else if (pr.state === "closed") status = "closed";
+        else status = "review";
+        const url = pr.html_url || webUrl;
+        cache[cacheId] = { status, url, ts: Date.now() };
+        writePrStatusCache(cache);
+        return { status, url };
+      } catch {
+        return { status: item.fallback || "review", url: webUrl };
+      }
+    }
+
+    async function loadContributions() {
+      const grid = document.getElementById("prGrid");
+      if (!grid) return;
+      const results = await Promise.all(contributions.map(async (item) => {
+        const { status, url } = await fetchPrStatus(item);
+        return { ...item, status, url };
+      }));
+      const rank = { merged: 0, review: 1 };
+      const visible = results.filter((r) => r.status !== "closed");
+      visible.sort((a, b) => (rank[a.status] ?? 9) - (rank[b.status] ?? 9));
+      if (!visible.length) {
+        const section = grid.closest(".pr-section");
+        if (section) section.remove();
+        return;
+      }
+      grid.innerHTML = visible.map((r) => {
+        const merged = r.status === "merged";
+        const cardMod = merged ? "pr-card--merged" : "pr-card--review";
+        const stampClass = merged ? "pr-stamp--merged" : "pr-stamp--review";
+        const stampText = merged ? "MERGED" : "IN REVIEW";
+        const proof = merged ? `Merged PR #${r.num} →` : `Open PR #${r.num} →`;
+        return `<a class="pr-card ${cardMod}" data-pr="#${r.num}" href="${htmlEscape(r.url)}" target="_blank" rel="noopener noreferrer">
+          <span class="pr-label">${htmlEscape(r.label)}</span>
+          <h3>${htmlEscape(r.name)}</h3>
+          <p>${htmlEscape(r.blurb)}</p>
+          <span class="pr-proof">${proof}</span>
+          <span class="pr-stamp ${stampClass}" aria-hidden="true">${stampText}</span>
+        </a>`;
+      }).join("");
     }
 
     async function loadEditors() {
@@ -1558,6 +1670,7 @@
     }
 
 
+    loadContributions();
     buildClouds();
     startDuckWalk();
     startDuckNotes();
