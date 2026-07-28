@@ -891,13 +891,14 @@
     .milestone-section,.editor-card{padding:18px 20px}
     .milestone-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
     .milestone-card{position:relative;display:flex;flex-direction:column;min-height:176px;padding:15px;overflow:hidden;border:1px solid #2c4255;border-radius:13px;background:linear-gradient(145deg,rgba(8,17,27,.9),rgba(11,26,38,.8));color:#eaf2fb;text-decoration:none;transition:transform .18s ease,border-color .18s ease,background .18s ease}
-    .milestone-card:before{content:attr(data-pr);position:absolute;right:-5px;top:-13px;color:rgba(108,193,248,.07);font:900 4.6rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.08em}
-    .milestone-card:after{content:"MERGED";position:absolute;right:12px;bottom:10px;padding:3px 5px;border:1px solid rgba(112,223,154,.26);border-radius:4px;color:rgba(112,223,154,.55);font:900 .5rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.12em;transform:rotate(-4deg)}
+    .milestone-card{border-top-width:2px}
+    .milestone-card:before{content:attr(data-pr);position:absolute;right:14px;top:14px;color:#6f8aa0;font:800 .74rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.02em}
+    .milestone-card:after{content:"\25CF  MERGED";position:absolute;left:15px;bottom:14px;display:inline-flex;align-items:center;padding:5px 10px;border-radius:999px;background:rgba(104,221,160,.16);border:1px solid rgba(104,221,160,.55);color:#8ff0bd;font:800 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em}
     .milestone-card:hover{transform:translateY(-3px);border-color:#65a9d7;background:#11283a}
     .milestone-label{color:#75c3fa;font-size:.68rem;font-weight:850;letter-spacing:.1em;text-transform:uppercase}
     .milestone-card h3{margin:8px 0 7px;font-size:1.02rem}
     .milestone-card p{margin:0;color:#9fb2c3;font-size:.77rem;line-height:1.5}
-    .milestone-proof{margin-top:auto;padding-top:12px;color:#dceaf6;font-size:.7rem;font-weight:750}
+    .milestone-proof{display:none}
     .milestone-card:nth-child(2){border-top-color:#a889ff}.milestone-card:nth-child(2) .milestone-label{color:#bba6ff}.milestone-card:nth-child(3){border-top-color:#ffbe73}.milestone-card:nth-child(3) .milestone-label{color:#ffc785}.milestone-card:nth-child(4){border-top-color:#68dda0}.milestone-card:nth-child(4) .milestone-label{color:#76e4aa}
     .pr-section{padding:18px 20px}
     .pr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
