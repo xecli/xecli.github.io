@@ -3,12 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaveEditors — Xbox 360 tooling &amp; research</title>
-  <meta name="description" content="SaveEditors builds practical open-source Xbox 360 tooling and hardware research — including XeCLI, a terminal-first RGH/JTAG toolkit — and contributes fixes back to major open-source projects.">
+  <title>SaveEditors — open-source tools &amp; upstream contributions</title>
+  <meta name="description" content="SaveEditors builds practical open-source tools — including XeCLI, our Xbox 360 CLI — and contributes fixes upstream to emulators, game engines, and developer tooling.">
   <meta name="theme-color" content="#0a0d12">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="SaveEditors — Xbox 360 tooling &amp; research">
-  <meta property="og:description" content="Practical open-source Xbox 360 tooling and hardware research, plus upstream contributions to RetroArch, Phaser, Xenia, OpenRCT2, and more.">
+  <meta property="og:title" content="SaveEditors — open-source tools &amp; upstream contributions">
+  <meta property="og:description" content="Practical open-source tools plus upstream fixes contributed to projects like RetroArch, Phaser, Xenia, OpenRCT2, RomM, and more.">
   <meta property="og:url" content="https://saveeditors.github.io/">
   <meta name="twitter:card" content="summary_large_image">
   <style>
@@ -151,8 +151,12 @@
     .card-desc{margin:7px 0 0;color:var(--muted);font-size:.87rem;line-height:1.55}
     .card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft)}
     .card-num{color:var(--muted-2);font:700 .8rem/1 ui-monospace,SFMono-Regular,Consolas,monospace}
-    .card-link{color:var(--accent);font-size:.82rem;font-weight:700}
+    .card-link{color:var(--accent);font-size:.82rem;font-weight:700;white-space:nowrap}
     .card:hover .card-link{text-decoration:underline}
+    .foot-left{display:inline-flex;align-items:center;gap:12px;min-width:0}
+    .card-stars{display:inline-flex;align-items:center;gap:4px;color:var(--muted-2);font-size:.76rem;font-weight:700;font-variant-numeric:tabular-nums}
+    .card-stars svg{width:12px;height:12px;fill:#ffc760;opacity:.9}
+    .stat b .star{fill:#ffc760;width:16px;height:16px;vertical-align:-2px;margin-right:3px}
     .pr-loading{grid-column:1/-1;margin:0;color:var(--muted-2);font-size:.9rem}
 
     /* ---------- Support ---------- */
@@ -214,9 +218,9 @@
   <main id="top">
     <section class="hero">
       <div class="hero-text">
-        <p class="kicker">Xbox 360 tooling &amp; research</p>
+        <p class="kicker">Open-source tools &amp; upstream contributions</p>
         <h1>SaveEditors</h1>
-        <p class="lead">Independent Xbox 360 tooling and hardware research, built into practical open-source projects and contributed back upstream.</p>
+        <p class="lead">We build practical open-source tools — including XeCLI, our Xbox 360 CLI — and contribute fixes upstream to emulators, game engines, and developer tooling.</p>
         <div class="cta-row">
           <a class="btn primary" href="#xecli">Explore XeCLI</a>
           <a class="btn" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
@@ -226,8 +230,8 @@
           <a class="btn" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Support</a>
         </div>
         <div class="stats">
-          <div class="stat"><b>100k+</b><span>Stars across projects</span></div>
-          <div class="stat"><b>7</b><span>Merged upstream</span></div>
+          <div class="stat"><b id="xecliStars">—</b><span>XeCLI GitHub stars</span></div>
+          <div class="stat"><b>7</b><span>PRs merged upstream</span></div>
           <div class="stat"><b id="statReview">6</b><span>PRs in review</span></div>
         </div>
       </div>
@@ -296,37 +300,37 @@
           <div class="card-top"><span class="card-kicker">ROM library</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">RomM</h3>
           <p class="card-desc">Surface empty platforms in the platform index for the self-hosted ROM manager.</p>
-          <div class="card-foot"><span class="card-num">#3945</span><span class="card-link">View PR →</span></div>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="rommapp/romm"></span><span class="card-num">#3945</span></span><span class="card-link">View PR →</span></div>
         </a>
         <a class="card" href="https://github.com/libretro/RetroArch/pull/19256" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Libretro / emulation</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">RetroArch</h3>
           <p class="card-desc">Fix ZIP member selection when loading content from archives.</p>
-          <div class="card-foot"><span class="card-num">#19256</span><span class="card-link">View PR →</span></div>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="libretro/RetroArch"></span><span class="card-num">#19256</span></span><span class="card-link">View PR →</span></div>
         </a>
         <a class="card" href="https://github.com/xenia-canary/xenia-canary/pull/1085" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Emulator research</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">Xenia Canary</h3>
           <p class="card-desc">GPU reset defaults derived from retail Xbox 360 hardware research.</p>
-          <div class="card-foot"><span class="card-num">#1085</span><span class="card-link">View PR →</span></div>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="xenia-canary/xenia-canary"></span><span class="card-num">#1085</span></span><span class="card-link">View PR →</span></div>
         </a>
         <a class="card" href="https://github.com/emoose/idaxex/pulls?q=is%3Apr+author%3ASaveEditors" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">IDA loader</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">IDA XEX</h3>
           <p class="card-desc">IDA Pro 9.3 loader support and corrected Visual Studio build behavior.</p>
-          <div class="card-foot"><span class="card-num">#15 · #17</span><span class="card-link">View PRs →</span></div>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="emoose/idaxex"></span><span class="card-num">#15 · #17</span></span><span class="card-link">View PRs →</span></div>
         </a>
         <a class="card" href="https://github.com/zeroKilo/XEXLoaderWV/pull/33" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Binary analysis</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">XEXLoaderWV</h3>
           <p class="card-desc">PDB, type-information, and Xbox 360 <code>.pdata</code> parsing fixes for Ghidra.</p>
-          <div class="card-foot"><span class="card-num">#33</span><span class="card-link">View PR →</span></div>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="zeroKilo/XEXLoaderWV"></span><span class="card-num">#33</span></span><span class="card-link">View PR →</span></div>
         </a>
         <a class="card" href="https://github.com/kododake/AABrowser/pull/51" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Interface engineering</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">AABrowser</h3>
           <p class="card-desc">Tabs, themes, scaling, start pages, sessions, and workflow controls.</p>
-          <div class="card-foot"><span class="card-num">#51</span><span class="card-link">View PR →</span></div>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="kododake/AABrowser"></span><span class="card-num">#51</span></span><span class="card-link">View PR →</span></div>
         </a>
       </div>
     </section>
@@ -345,7 +349,7 @@
     <section class="support" id="support">
       <div>
         <h2>Build with us</h2>
-        <p>Request a tool, report an issue, or help fund continued Xbox 360 research and open-source development.</p>
+        <p>Request a tool, report an issue, or help fund continued open-source development and research.</p>
       </div>
       <div class="support-actions">
         <a class="btn" href="https://whispermeter.com/feedback/SaveEditors" target="_blank" rel="noopener noreferrer">Request a tool</a>
@@ -369,6 +373,72 @@
     "use strict";
     const htmlEscape = (value) => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+    const starSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
+
+    function formatStars(n) {
+      if (typeof n !== "number" || isNaN(n)) return null;
+      if (n < 1000) return String(n);
+      return (Math.round(n / 100) / 10).toString().replace(/\.0$/, "") + "k";
+    }
+
+    /* ---- repo star counts (cached 6h) ---- */
+    const repoStarsCacheKey = "saveeditors-repo-stars-v1";
+    const repoStarsTtlMs = 6 * 60 * 60 * 1000;
+
+    function readRepoStarsCache() {
+      try { return JSON.parse(localStorage.getItem(repoStarsCacheKey) || "{}") || {}; }
+      catch { return {}; }
+    }
+    function writeRepoStarsCache(cache) {
+      try { localStorage.setItem(repoStarsCacheKey, JSON.stringify(cache)); } catch {}
+    }
+    function cacheRepoStars(repo, stars) {
+      if (typeof stars !== "number") return;
+      const cache = readRepoStarsCache();
+      cache[repo] = { stars, ts: Date.now() };
+      writeRepoStarsCache(cache);
+    }
+    async function fetchRepoStars(repo) {
+      const cache = readRepoStarsCache();
+      const cached = cache[repo];
+      if (cached && typeof cached.stars === "number" && Date.now() - cached.ts < repoStarsTtlMs) {
+        return cached.stars;
+      }
+      try {
+        const res = await fetch(`https://api.github.com/repos/${repo}`, {
+          headers: { Accept: "application/vnd.github+json" }
+        });
+        if (!res.ok) throw new Error("repo request failed");
+        const data = await res.json();
+        const stars = data.stargazers_count;
+        if (typeof stars === "number") { cacheRepoStars(repo, stars); return stars; }
+        return cached ? cached.stars : null;
+      } catch {
+        return cached ? cached.stars : null;
+      }
+    }
+
+    async function loadCardStars() {
+      const els = document.querySelectorAll(".card-stars[data-stars-repo]");
+      await Promise.all([...els].map(async (el) => {
+        const stars = await fetchRepoStars(el.dataset.starsRepo);
+        const label = formatStars(stars);
+        if (label == null) { el.remove(); return; }
+        el.innerHTML = `${starSvg} ${label}`;
+        el.title = `${stars.toLocaleString()} GitHub stars`;
+      }));
+    }
+
+    async function loadXecliStars() {
+      const el = document.getElementById("xecliStars");
+      if (!el) return;
+      const stars = await fetchRepoStars("SaveEditors/xecli");
+      const label = formatStars(stars);
+      if (label == null) { el.textContent = "—"; return; }
+      el.innerHTML = `<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>${label}`;
+      el.title = `${stars.toLocaleString()} GitHub stars`;
+    }
 
     const contributions = [
       { repo: "phaserjs/phaser",     num: 7343,  name: "Phaser",    label: "Web game engine",     blurb: "Preserve global loader credentials across asset loads.", fallback: "review" },
@@ -396,7 +466,7 @@
       const cache = readPrStatusCache();
       const cached = cache[cacheId];
       if (cached && cached.status && Date.now() - cached.ts < prStatusTtlMs) {
-        return { status: cached.status, url: cached.url || webUrl };
+        return { status: cached.status, url: cached.url || webUrl, stars: cached.stars };
       }
       try {
         const res = await fetch(`https://api.github.com/repos/${item.repo}/pulls/${item.num}`, {
@@ -409,11 +479,13 @@
         else if (pr.state === "closed") status = "closed";
         else status = "review";
         const url = pr.html_url || webUrl;
-        cache[cacheId] = { status, url, ts: Date.now() };
+        const stars = pr.base && pr.base.repo ? pr.base.repo.stargazers_count : undefined;
+        if (typeof stars === "number") cacheRepoStars(item.repo, stars);
+        cache[cacheId] = { status, url, stars, ts: Date.now() };
         writePrStatusCache(cache);
-        return { status, url };
+        return { status, url, stars };
       } catch {
-        return { status: item.fallback || "review", url: webUrl };
+        return { status: item.fallback || "review", url: webUrl, stars: undefined };
       }
     }
 
@@ -421,8 +493,8 @@
       const grid = document.getElementById("prGrid");
       if (!grid) return;
       const results = await Promise.all(contributions.map(async (item) => {
-        const { status, url } = await fetchPrStatus(item);
-        return { ...item, status, url };
+        const { status, url, stars } = await fetchPrStatus(item);
+        return { ...item, status, url, stars };
       }));
       const rank = { merged: 0, review: 1 };
       const visible = results.filter((r) => r.status !== "closed");
@@ -442,16 +514,22 @@
         const badgeClass = merged ? "badge-merged" : "badge-review";
         const badgeText = merged ? "MERGED" : "IN REVIEW";
         const linkText = merged ? "View PR →" : "Review →";
+        const starLabel = formatStars(r.stars);
+        const starsHtml = starLabel != null
+          ? `<span class="card-stars" title="${htmlEscape(r.stars.toLocaleString())} GitHub stars">${starSvg} ${starLabel}</span>`
+          : "";
         return `<a class="card" href="${htmlEscape(r.url)}" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">${htmlEscape(r.label)}</span><span class="badge ${badgeClass}">${badgeText}</span></div>
           <h3 class="card-title">${htmlEscape(r.name)}</h3>
           <p class="card-desc">${htmlEscape(r.blurb)}</p>
-          <div class="card-foot"><span class="card-num">#${r.num}</span><span class="card-link">${linkText}</span></div>
+          <div class="card-foot"><span class="foot-left">${starsHtml}<span class="card-num">#${r.num}</span></span><span class="card-link">${linkText}</span></div>
         </a>`;
       }).join("");
     }
 
     document.getElementById("year").textContent = new Date().getFullYear();
+    loadXecliStars();
+    loadCardStars();
     loadContributions();
   </script>
 </body>
