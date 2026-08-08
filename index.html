@@ -197,6 +197,50 @@
     .tag{padding:6px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--panel-2);font-size:.78rem;font-weight:600}
     .btn-row{display:flex;flex-wrap:wrap;gap:12px}
 
+    /* ---------- Side projects ---------- */
+    .project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+    .project-card{
+      --project-accent:92,200,245;
+      position:relative;isolation:isolate;overflow:hidden;
+      display:flex;flex-direction:column;min-height:330px;padding:22px;
+      border:1px solid var(--line);border-radius:var(--radius);
+      background:
+        radial-gradient(380px 210px at 10% 0%,rgba(var(--project-accent),.1),transparent 64%),
+        var(--panel);
+      transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+    }
+    .project-card:before{
+      content:"";position:absolute;z-index:-1;top:0;left:22px;right:22px;height:1px;
+      background:linear-gradient(90deg,transparent,rgba(var(--project-accent),.82),transparent);
+    }
+    .project-card:hover{
+      transform:translateY(-3px);border-color:rgba(var(--project-accent),.46);
+      box-shadow:0 20px 46px rgba(0,0,0,.24);
+    }
+    .project-card:focus-visible{outline:2px solid rgb(var(--project-accent));outline-offset:4px}
+    .project-xenon{--project-accent:92,200,245}
+    .project-xenasm{--project-accent:174,142,255}
+    .project-dominator{--project-accent:255,193,120}
+    .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
+    .project-icon{
+      display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(var(--project-accent),.3);
+      border-radius:12px;background:rgba(var(--project-accent),.1);color:rgb(var(--project-accent));
+    }
+    .project-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+    .project-platform{
+      padding:5px 9px;border:1px solid rgba(var(--project-accent),.25);border-radius:999px;
+      background:rgba(var(--project-accent),.07);color:rgb(var(--project-accent));
+      font:750 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em;
+    }
+    .project-category{margin:0 0 6px;color:rgb(var(--project-accent));font-size:.68rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
+    .project-card h3{margin:0;font-size:1.25rem;letter-spacing:-.025em}
+    .project-card-desc{margin:9px 0 18px;color:var(--muted);font-size:.88rem;line-height:1.6}
+    .project-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
+    .project-tags span{padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2);color:var(--muted);font-size:.69rem;font-weight:650}
+    .project-card-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:15px;border-top:1px solid var(--line-soft)}
+    .project-link{color:rgb(var(--project-accent));font-size:.82rem;font-weight:750;white-space:nowrap}
+    .project-card:hover .project-link{text-decoration:underline}
+
     /* ---------- Contribution cards ---------- */
     .card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
     .card{
@@ -290,11 +334,11 @@
       .hero{grid-template-columns:1fr;padding-top:clamp(36px,8vw,56px)}
       .hero-visual{order:2}
       .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+      .project-grid,.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
       .support{grid-template-columns:1fr}
     }
     @media (max-width:560px){
-      .feature-grid,.card-grid{grid-template-columns:1fr}
+      .feature-grid,.project-grid,.card-grid{grid-template-columns:1fr}
       .stat{min-width:0}
       .btn{flex:1 1 auto;justify-content:center}
       .merged-pr-summary-label{padding-left:0;font-size:.68rem}
@@ -307,6 +351,7 @@
       .nav:after{display:none}
       .xecli-title-shine:after{display:none}
       .hero-brand-shine:after{display:none}
+      .project-card{transition:none}
     }
   </style>
 </head>
@@ -319,6 +364,7 @@
     </a>
     <nav class="nav-links">
       <a class="nav-hide" href="#xecli">XeCLI</a>
+      <a class="nav-hide" href="#projects">Projects</a>
       <a class="nav-hide" href="#contributions">Contributions</a>
       <a class="nav-hide" href="#support">Support</a>
       <a class="nav-gh" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
@@ -331,9 +377,9 @@
   <main id="top">
     <section class="hero">
       <div class="hero-text">
-        <p class="kicker">Open-source tools &amp; upstream contributions</p>
-        <h1 class="hero-brand-shine" data-shine-text="SaveEditors">SaveEditors</h1>
-        <p class="lead">We build practical open-source tools — including XeCLI, our terminal-first Xbox 360 toolkit — and contribute fixes upstream to emulators, game engines, and developer tooling.</p>
+        <p class="kicker">Xbox 360 console toolkit</p>
+        <h1 class="hero-brand-shine" data-shine-text="XeCLI">XeCLI</h1>
+        <p class="lead">A terminal-first toolkit for RGH/JTAG console diagnostics, file management, executable inspection, memory access, and repeatable workflows.</p>
         <div class="cta-row">
           <a class="btn primary" href="#xecli">Explore XeCLI</a>
           <a class="btn" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
@@ -396,6 +442,57 @@
         <a class="btn primary" href="https://github.com/SaveEditors/xecli" target="_blank" rel="noopener noreferrer">View repository</a>
         <a class="btn" href="https://github.com/SaveEditors/xecli/wiki" target="_blank" rel="noopener noreferrer">Documentation</a>
         <a class="btn" href="https://github.com/SaveEditors/xecli/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+      </div>
+    </section>
+
+    <section class="section" id="projects">
+      <div class="section-head">
+        <p class="kicker">Side projects</p>
+        <h2>Focused tools and research projects</h2>
+        <p>Independent projects spanning Xbox 360 graphics research, Xenos shader tooling, and native Windows device configuration.</p>
+      </div>
+      <div class="project-grid">
+        <a class="project-card project-xenon" href="https://github.com/SaveEditors/xenon-soft3d" target="_blank" rel="noopener noreferrer" aria-label="View Xenon Soft3D on GitHub">
+          <div class="project-card-top">
+            <span class="project-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
+            </span>
+            <span class="project-platform">LIBXENON</span>
+          </div>
+          <p class="project-category">Graphics research</p>
+          <h3>Xenon Soft3D</h3>
+          <p class="project-card-desc">A compact CPU software rasterizer for Xbox 360 homebrew, with depth testing and native Xenos tiled-framebuffer presentation.</p>
+          <div class="project-tags"><span>Xbox 360</span><span>Software rendering</span><span>libXenon</span></div>
+          <div class="project-card-foot"><span class="card-stars" data-stars-repo="SaveEditors/xenon-soft3d"></span><span class="project-link">View project →</span></div>
+        </a>
+
+        <a class="project-card project-xenasm" href="https://github.com/SaveEditors/xenasm" target="_blank" rel="noopener noreferrer" aria-label="View Xenasm on GitHub">
+          <div class="project-card-top">
+            <span class="project-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5M13.5 4l-3 16"/></svg>
+            </span>
+            <span class="project-platform">PYTHON</span>
+          </div>
+          <p class="project-category">Shader tooling</p>
+          <h3>Xenasm</h3>
+          <p class="project-card-desc">A lightweight Python toolkit for building and decoding Xenos shader microcode from authoritative instruction layouts.</p>
+          <div class="project-tags"><span>Xenos</span><span>Microcode</span><span>Assembler + decoder</span></div>
+          <div class="project-card-foot"><span class="card-stars" data-stars-repo="SaveEditors/xenasm"></span><span class="project-link">View project →</span></div>
+        </a>
+
+        <a class="project-card project-dominator" href="https://github.com/SaveEditors/dominator-studio" target="_blank" rel="noopener noreferrer" aria-label="View Dominator Studio on GitHub">
+          <div class="project-card-top">
+            <span class="project-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M7.5 10h3M9 8.5v3M15.7 9h.01M18 11h.01"/></svg>
+            </span>
+            <span class="project-platform">WINDOWS</span>
+          </div>
+          <p class="project-category">Device tooling</p>
+          <h3>Dominator Studio</h3>
+          <p class="project-card-desc">Native Windows desktop and CLI tooling for configuration, backups, write verification, and recovery on the wired CM00085 adapter.</p>
+          <div class="project-tags"><span>Desktop app</span><span>Command line</span><span>USB</span></div>
+          <div class="project-card-foot"><span class="card-stars" data-stars-repo="SaveEditors/dominator-studio"></span><span class="project-link">View project →</span></div>
+        </a>
       </div>
     </section>
 
