@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SaveEditors — open-source tools &amp; upstream contributions</title>
-  <meta name="description" content="SaveEditors builds practical open-source tools — including XeCLI, our Xbox 360 CLI — and contributes fixes upstream to emulators, game engines, and developer tooling.">
+  <meta name="description" content="SaveEditors builds practical open-source tools — including XeCLI, our terminal-first Xbox 360 development and diagnostics toolkit — and contributes fixes upstream to emulators, game engines, and developer tooling.">
   <meta name="theme-color" content="#0a0d12">
   <meta property="og:type" content="website">
   <meta property="og:title" content="SaveEditors — open-source tools &amp; upstream contributions">
@@ -45,9 +45,17 @@
       line-height:1.6;
       -webkit-font-smoothing:antialiased;
       overflow-x:hidden;
+      isolation:isolate;
     }
     a{color:inherit;text-decoration:none}
     ::selection{background:rgba(92,200,245,.28)}
+
+    /* ---------- Ambient fireflies ---------- */
+    .ambient-sparkles{
+      position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%;
+      pointer-events:none;opacity:.86;mix-blend-mode:screen;
+    }
+    main,.footer{position:relative;z-index:1}
 
     /* ---------- Nav ---------- */
     .nav{
@@ -57,6 +65,23 @@
       background:rgba(10,13,18,.72);
       backdrop-filter:blur(12px);
       border-bottom:1px solid var(--line-soft);
+    }
+    .nav:before{
+      content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
+      background:linear-gradient(90deg,transparent 0%,rgba(92,200,245,.14) 22%,rgba(111,224,163,.12) 50%,rgba(92,200,245,.14) 78%,transparent 100%);
+    }
+    .nav:after{
+      content:"";position:absolute;left:-160px;bottom:-1px;width:160px;height:2px;pointer-events:none;
+      background:linear-gradient(90deg,transparent 0%,rgba(92,200,245,.06) 18%,rgba(92,200,245,.42) 38%,rgba(232,250,255,.9) 50%,rgba(111,224,163,.46) 62%,rgba(111,224,163,.08) 82%,transparent 100%);
+      filter:drop-shadow(0 0 3px rgba(92,200,245,.52)) drop-shadow(0 0 6px rgba(111,224,163,.2));
+      will-change:transform,opacity;
+      animation:navLightSweep 31.5s linear infinite;
+    }
+    @keyframes navLightSweep{
+      0%,25.4%{transform:translate3d(0,0,0);opacity:0}
+      28%{opacity:.84}
+      94%{transform:translate3d(calc(100vw + 320px),0,0);opacity:.84}
+      96%,100%{transform:translate3d(calc(100vw + 320px),0,0);opacity:0}
     }
     .brand{display:inline-flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.01em;font-size:1.02rem}
     .brand svg{width:20px;height:20px;fill:var(--accent)}
@@ -78,6 +103,22 @@
     .kicker{margin:0 0 10px;color:var(--accent);font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
     .section-head h2{margin:0 0 10px;font-size:clamp(1.5rem,3.4vw,2.1rem);letter-spacing:-.03em;line-height:1.15}
     .section-head p{margin:0;color:var(--muted);font-size:1rem}
+    .xecli-title-shine{position:relative;display:block;width:fit-content;max-width:100%;isolation:isolate}
+    .xecli-title-shine:after{
+      content:attr(data-shine-text);position:absolute;inset:0;z-index:1;display:block;pointer-events:none;
+      color:transparent;font:inherit;letter-spacing:inherit;line-height:inherit;
+      background:linear-gradient(108deg,transparent 35%,rgba(92,200,245,.16) 43%,rgba(235,251,255,.96) 50%,rgba(111,224,163,.34) 57%,transparent 65%);
+      background-size:260% 100%;background-position:145% 0;
+      -webkit-background-clip:text;background-clip:text;
+      will-change:background-position,opacity;
+      animation:xecliTitleShine 12.6s ease-in-out 1.6s infinite;
+    }
+    @keyframes xecliTitleShine{
+      0%,26%{background-position:145% 0;opacity:0}
+      32%{opacity:.9}
+      66%{background-position:-45% 0;opacity:.9}
+      72%,100%{background-position:-45% 0;opacity:0}
+    }
 
     /* ---------- Hero ---------- */
     .hero{
@@ -87,6 +128,20 @@
     }
     .hero-text,.hero-visual{min-width:0}
     .hero h1{margin:0 0 16px;font-size:clamp(2.6rem,7vw,4.6rem);line-height:.98;letter-spacing:-.045em;font-weight:850}
+    .hero-brand-shine{
+      width:fit-content;max-width:100%;color:transparent;-webkit-text-fill-color:transparent;
+      background:linear-gradient(108deg,#e8eef6 0%,#e8eef6 38%,#fff 45%,#78d8fa 49%,#a8efd0 53%,#f4fbff 57%,#e8eef6 64%,#e8eef6 100%);
+      background-size:260% 100%;background-position:142% 0;
+      -webkit-background-clip:text;background-clip:text;
+      will-change:background-position,filter;
+      animation:heroBrandShine 14.8s ease-in-out .4s infinite;
+    }
+    @keyframes heroBrandShine{
+      0%,22%{background-position:142% 0;filter:drop-shadow(0 0 0 rgba(92,200,245,0))}
+      47%{filter:drop-shadow(0 0 8px rgba(92,200,245,.12))}
+      62%{background-position:-42% 0;filter:drop-shadow(0 0 12px rgba(111,224,163,.1))}
+      70%,100%{background-position:-42% 0;filter:drop-shadow(0 0 0 rgba(92,200,245,0))}
+    }
     .hero .lead{margin:0 0 26px;max-width:520px;color:var(--muted);font-size:clamp(1.02rem,1.6vw,1.18rem)}
     .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:34px}
     .btn{
@@ -244,10 +299,14 @@
       html{scroll-behavior:auto}
       .cur,.terminal-entry-new,.merged-pr-card{animation:none}
       .merged-pr-chevron,.merged-pr-reveal{transition:none}
+      .nav:after{display:none}
+      .xecli-title-shine:after{display:none}
+      .hero-brand-shine{color:var(--text);-webkit-text-fill-color:currentColor;background:none;filter:none;animation:none}
     }
   </style>
 </head>
 <body>
+  <canvas class="ambient-sparkles" id="ambientSparkles" aria-hidden="true"></canvas>
   <header class="nav">
     <a class="brand" href="#top" aria-label="SaveEditors">
       <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.08.55-.17.55-.39l-.01-1.37c-2.01.44-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.53-.01-.54.63-.01 1.08.58 1.23.82.72 1.21 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.54 7.54 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .22.15.48.55.39A8 8 0 0 0 8 0Z"></path></svg>
@@ -268,8 +327,8 @@
     <section class="hero">
       <div class="hero-text">
         <p class="kicker">Open-source tools &amp; upstream contributions</p>
-        <h1>SaveEditors</h1>
-        <p class="lead">We build practical open-source tools — including XeCLI, our Xbox 360 CLI — and contribute fixes upstream to emulators, game engines, and developer tooling.</p>
+        <h1 class="hero-brand-shine">SaveEditors</h1>
+        <p class="lead">We build practical open-source tools — including XeCLI, our terminal-first Xbox 360 toolkit — and contribute fixes upstream to emulators, game engines, and developer tooling.</p>
         <div class="cta-row">
           <a class="btn primary" href="#xecli">Explore XeCLI</a>
           <a class="btn" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
@@ -300,8 +359,8 @@
     <section class="section" id="xecli">
       <div class="section-head">
         <p class="kicker">Flagship project</p>
-        <h2>XeCLI — terminal-first Xbox 360 toolkit</h2>
-        <p>A command-line toolkit for RGH/JTAG consoles: link over XBDM, JRPC2, and FTP, dump and inspect XEX executables, poke memory, run diagnostics, and automate repeatable console workflows.</p>
+        <h2 class="xecli-title-shine" data-shine-text="XeCLI — terminal-first Xbox 360 toolkit">XeCLI — terminal-first Xbox 360 toolkit</h2>
+        <p>A terminal-first toolkit with command-line and desktop interfaces for RGH/JTAG consoles: link over XBDM, JRPC2, and FTP, dump and inspect XEX executables, inspect memory, run diagnostics, and automate repeatable console workflows.</p>
       </div>
       <div class="feature-grid">
         <div class="feature">
@@ -426,6 +485,174 @@
     "use strict";
     const htmlEscape = (value) => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+    function startAmbientSparkles() {
+      const canvas = document.getElementById("ambientSparkles");
+      const context = canvas?.getContext("2d");
+      if (!canvas || !context) return;
+
+      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      const palette = [
+        [218, 242, 255],
+        [92, 200, 245],
+        [111, 224, 163],
+        [255, 193, 120]
+      ];
+      let width = 0;
+      let height = 0;
+      let particles = [];
+      let animationFrame = 0;
+      let resizeTimer = 0;
+      let previousTime = 0;
+      const minimumFrameTime = 1000 / 30;
+
+      const randomBetween = (minimum, maximum) => minimum + Math.random() * (maximum - minimum);
+
+      const createParticle = (index) => {
+        const depth = randomBetween(.16, 1);
+        const sparkle = index % 19 === 0;
+        const firefly = !sparkle && index % 4 === 0;
+        const paletteIndex = index % 12 < 7 ? 0 : index % 12 < 10 ? 1 : index % 12 === 10 ? 2 : 3;
+        const color = palette[paletteIndex];
+        const direction = Math.random() < .5 ? -1 : 1;
+        return {
+          x: Math.random() * width,
+          baseY: Math.random() * height,
+          radius: sparkle
+            ? randomBetween(1.3, 2.5) * (.72 + depth * .4)
+            : firefly
+              ? randomBetween(.78, 1.7) * (.72 + depth * .46)
+              : randomBetween(.34, .94) * (.68 + depth * .54),
+          halo: sparkle ? randomBetween(9, 16) : firefly ? randomBetween(7, 14) : randomBetween(1.5, 4.5),
+          color,
+          alpha: sparkle ? randomBetween(.44, .7) : firefly ? randomBetween(.3, .58) : randomBetween(.18, .38),
+          phase: randomBetween(0, Math.PI * 2),
+          pulseRate: sparkle ? randomBetween(.00042, .00078) : randomBetween(.00016, .00042),
+          blinkRate: randomBetween(.00007, .00018),
+          driftRate: randomBetween(.00012, .00038),
+          drift: randomBetween(5, 24) * (.45 + depth * .78),
+          velocityX: direction * randomBetween(7 + depth * 7, 18 + depth * 25),
+          depth,
+          sparkle,
+          firefly
+        };
+      };
+
+      const drawParticle = (particle, time, still = false) => {
+        const pulseWave = still ? .58 : (Math.sin(time * particle.pulseRate + particle.phase) + 1) / 2;
+        const blinkWave = still ? .7 : (Math.sin(time * particle.blinkRate + particle.phase * 1.7) + 1) / 2;
+        const pulse = particle.sparkle ? Math.pow(pulseWave, 6) : particle.firefly ? .25 + pulseWave * .75 : .62 + pulseWave * .38;
+        const blink = particle.firefly || particle.sparkle ? .18 + Math.pow(blinkWave, 1.7) * .82 : .72 + blinkWave * .28;
+        const alpha = particle.alpha * (.26 + pulse * .74) * blink;
+        const y = particle.baseY + (still ? 0 : Math.sin(time * particle.driftRate + particle.phase) * particle.drift
+          + Math.cos(time * particle.driftRate * .46 + particle.phase) * particle.drift * .28);
+        const x = particle.x;
+        const [red, green, blue] = particle.color;
+
+        context.save();
+        context.globalCompositeOperation = "lighter";
+        context.shadowColor = `rgba(${red},${green},${blue},${Math.min(.85, alpha + .2)})`;
+        context.shadowBlur = particle.halo * (.55 + pulse * .7);
+
+        if (particle.sparkle) {
+          const reach = particle.radius * (1.5 + pulse * 2.3);
+          context.strokeStyle = `rgba(${red},${green},${blue},${Math.min(.72, alpha + .12)})`;
+          context.lineWidth = .65;
+          context.beginPath();
+          context.moveTo(x - reach, y);
+          context.lineTo(x + reach, y);
+          context.moveTo(x, y - reach * 1.6);
+          context.lineTo(x, y + reach * 1.6);
+          context.stroke();
+        }
+
+        context.fillStyle = `rgba(${red},${green},${blue},${Math.min(.88, alpha + (particle.firefly || particle.sparkle ? .14 : .04))})`;
+        context.beginPath();
+        context.arc(x, y, particle.radius * (.76 + pulse * .38), 0, Math.PI * 2);
+        context.fill();
+        context.restore();
+      };
+
+      const draw = (time = 0, still = false) => {
+        context.clearRect(0, 0, width, height);
+        particles.forEach((particle) => drawParticle(particle, time, still));
+      };
+
+      const resize = () => {
+        width = window.innerWidth;
+        height = window.innerHeight;
+        const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
+        canvas.width = Math.round(width * pixelRatio);
+        canvas.height = Math.round(height * pixelRatio);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+        const areaCount = Math.round((width * height) / 9000);
+        const maximum = width < 640 ? 72 : 190;
+        const count = Math.max(width < 640 ? 42 : 84, Math.min(maximum, areaCount));
+        const renderedCount = motionQuery.matches ? Math.max(10, Math.ceil(count * .22)) : count;
+        particles = Array.from({ length: renderedCount }, (_, index) => createParticle(index));
+        draw(performance.now(), motionQuery.matches);
+      };
+
+      const animate = (time) => {
+        if (document.hidden || motionQuery.matches) {
+          animationFrame = 0;
+          return;
+        }
+        if (previousTime && time - previousTime < minimumFrameTime) {
+          animationFrame = requestAnimationFrame(animate);
+          return;
+        }
+        const elapsed = Math.min(40, previousTime ? time - previousTime : 16) / 1000;
+        previousTime = time;
+        particles.forEach((particle) => {
+          particle.x += particle.velocityX * elapsed;
+          const margin = particle.halo + particle.drift + 6;
+          if (particle.velocityX < 0 && particle.x < -margin) {
+            particle.x = width + margin;
+            particle.baseY = Math.random() * height;
+            particle.phase = randomBetween(0, Math.PI * 2);
+          }
+          if (particle.velocityX > 0 && particle.x > width + margin) {
+            particle.x = -margin;
+            particle.baseY = Math.random() * height;
+            particle.phase = randomBetween(0, Math.PI * 2);
+          }
+        });
+        draw(time);
+        animationFrame = requestAnimationFrame(animate);
+      };
+
+      const start = () => {
+        if (animationFrame || document.hidden || motionQuery.matches) return;
+        previousTime = 0;
+        animationFrame = requestAnimationFrame(animate);
+      };
+
+      const stop = () => {
+        if (animationFrame) cancelAnimationFrame(animationFrame);
+        animationFrame = 0;
+      };
+
+      const handleMotionChange = () => {
+        stop();
+        resize();
+        if (!motionQuery.matches) start();
+      };
+
+      window.addEventListener("resize", () => {
+        window.clearTimeout(resizeTimer);
+        resizeTimer = window.setTimeout(resize, 140);
+      }, { passive: true });
+      document.addEventListener("visibilitychange", () => {
+        if (document.hidden) stop();
+        else start();
+      });
+      motionQuery.addEventListener("change", handleMotionChange);
+      resize();
+      start();
+    }
 
     const terminalDemos = [
       { command: "rgh status", result: "✓ connected", note: "· XBDM · kernel 2.0.17559.0" },
@@ -894,6 +1121,7 @@
     document.getElementById("year").textContent = new Date().getFullYear();
     document.getElementById("mergedPrControl")?.addEventListener("click", revealNextMergedPrBatch);
     updateMergedPrCount();
+    startAmbientSparkles();
     startXeCliTerminalDemo();
     loadXecliStars();
     loadCardStars();
