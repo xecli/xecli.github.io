@@ -116,11 +116,15 @@
     .terminal-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#0c131b;border-bottom:1px solid #1a2531;color:#5f7183}
     .tdot{width:10px;height:10px;border-radius:50%;background:#ff6058}.tdot:nth-child(2){background:#ffbe2f}.tdot:nth-child(3){background:#2bca42}
     .terminal-title{margin-left:8px;font-size:.72rem;letter-spacing:.04em}
-    .terminal-body{padding:16px 18px 20px;color:#9db4c6;overflow-x:auto}
+    .terminal-body{min-height:218px;padding:16px 18px 20px;color:#9db4c6;overflow-x:auto;overflow-y:hidden}
+    .terminal-entry{min-width:max-content}
+    .terminal-entry + .terminal-entry{margin-top:3px}
+    .terminal-entry-new{animation:terminalEntryIn .24s ease-out both}
     .terminal-body .l{display:block;white-space:pre}
-    .cmd{color:var(--accent)}.arg{color:#e8eef6}.ok{color:var(--green)}.dim{color:#5f7183}
+    .cmd{color:var(--accent)}.arg,.terminal-value{color:#e8eef6}.ok{color:var(--green)}.dim{color:#5f7183}
     .cur{display:inline-block;width:8px;height:1.05em;margin-left:2px;background:var(--green);vertical-align:-.15em;animation:blink 1.1s steps(1) infinite}
     @keyframes blink{50%{opacity:0}}
+    @keyframes terminalEntryIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
 
     /* ---------- Feature grid ---------- */
     .feature-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:26px}
@@ -159,6 +163,44 @@
     .stat b .star{fill:#ffc760;width:16px;height:16px;vertical-align:-2px;margin-right:3px}
     .pr-loading{grid-column:1/-1;margin:0;color:var(--muted-2);font-size:.9rem}
 
+    /* ---------- Incremental merged PR disclosure ---------- */
+    .merged-pr-disclosure{
+      position:relative;display:grid;place-items:center;width:100%;min-height:52px;margin-top:34px;
+      padding:0;border:0;background:transparent;color:var(--muted);font:inherit;cursor:pointer;user-select:none;
+    }
+    .merged-pr-disclosure:before{
+      content:"";position:absolute;left:0;right:0;top:50%;height:1px;
+      background:linear-gradient(90deg,transparent,var(--line) 8%,#2a3747 50%,var(--line) 92%,transparent);
+    }
+    .merged-pr-summary-label,.merged-pr-summary-count{
+      position:absolute;top:50%;z-index:1;transform:translateY(-50%);
+      padding:0 12px;background:var(--bg);font-size:.76rem;font-weight:750;letter-spacing:.04em;
+    }
+    .merged-pr-summary-label{left:0;text-transform:uppercase}
+    .merged-pr-summary-count{right:0;color:var(--muted-2);font:700 .72rem/1 ui-monospace,SFMono-Regular,Consolas,monospace}
+    .merged-pr-chevron{
+      position:relative;z-index:2;display:grid;place-items:center;width:38px;height:38px;
+      border:1px solid #314154;border-radius:50%;background:var(--panel);
+      color:var(--accent);box-shadow:0 8px 24px rgba(0,0,0,.28);
+      transition:transform .22s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
+    }
+    .merged-pr-chevron svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+    .merged-pr-disclosure:hover .merged-pr-chevron{border-color:var(--accent);background:#131c27;box-shadow:0 8px 28px rgba(92,200,245,.14)}
+    .merged-pr-disclosure:focus-visible{outline:2px solid var(--accent);outline-offset:5px;border-radius:10px}
+    .merged-pr-disclosure.is-exhausted .merged-pr-chevron{transform:rotate(180deg)}
+    .merged-pr-disclosure[hidden]{display:none}
+    .merged-pr-reveal{height:0;overflow:hidden;transition:height .72s cubic-bezier(.22,1,.36,1)}
+    .merged-pr-more-grid{padding-top:15px}
+    .merged-pr-card{
+      transform-origin:top center;
+      animation:mergedPrCardIn .62s cubic-bezier(.22,1,.36,1) both;
+      animation-delay:calc(var(--reveal-index,0) * 110ms);
+    }
+    @keyframes mergedPrCardIn{
+      from{opacity:0;transform:translateY(-18px) scale(.985)}
+      to{opacity:1;transform:translateY(0) scale(1)}
+    }
+
     /* ---------- Support ---------- */
     .support{
       margin:clamp(48px,7vw,88px) 0;padding:clamp(28px,4vw,44px);
@@ -195,6 +237,13 @@
       .feature-grid,.card-grid{grid-template-columns:1fr}
       .stat{min-width:0}
       .btn{flex:1 1 auto;justify-content:center}
+      .merged-pr-summary-label{padding-left:0;font-size:.68rem}
+      .merged-pr-summary-count{padding-right:0;font-size:.66rem}
+    }
+    @media (prefers-reduced-motion:reduce){
+      html{scroll-behavior:auto}
+      .cur,.terminal-entry-new,.merged-pr-card{animation:none}
+      .merged-pr-chevron,.merged-pr-reveal{transition:none}
     }
   </style>
 </head>
@@ -231,21 +280,18 @@
         </div>
         <div class="stats">
           <div class="stat"><b id="xecliStars">—</b><span>XeCLI GitHub stars</span></div>
-          <div class="stat"><b>7</b><span>PRs merged upstream</span></div>
+          <div class="stat"><b id="statMerged">7</b><span>PRs merged upstream</span></div>
           <div class="stat"><b id="statReview">6</b><span>PRs in review</span></div>
         </div>
       </div>
       <div class="hero-visual">
-        <div class="terminal" aria-label="XeCLI terminal session">
+        <div class="terminal" aria-label="Animated XeCLI command examples">
           <div class="terminal-bar"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span><span class="terminal-title">saveeditors — xecli</span></div>
-          <div class="terminal-body">
-<span class="l"><span class="cmd">$</span> xecli connect <span class="arg">192.168.1.10</span></span>
-<span class="l"><span class="ok">✓ linked</span> <span class="dim">· XBDM · kernel 2.0.17559.0</span></span>
-<span class="l"><span class="cmd">$</span> xecli xex dump <span class="arg">default.xex</span></span>
-<span class="l"><span class="ok">✓ 12.4 MB</span> <span class="dim">→ ./dumps/default.xex</span></span>
-<span class="l"><span class="cmd">$</span> xecli diag run</span>
-<span class="l"><span class="ok">✓ transport</span> <span class="ok">✓ memory</span> <span class="ok">✓ storage</span></span>
-<span class="l"><span class="cmd">$</span><span class="cur"></span></span>
+          <div class="terminal-body" id="xecliTerminalBody" aria-live="off">
+            <div class="terminal-entry" data-demo-index="0"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh status</span></span><span class="l"><span class="ok">✓ connected</span> <span class="dim">· XBDM · kernel 2.0.17559.0</span></span></div>
+            <div class="terminal-entry" data-demo-index="1"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh modules list</span></span><span class="l"><span class="ok">default.xex</span> <span class="dim">· base 0x82000000</span></span></div>
+            <div class="terminal-entry" data-demo-index="2"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh screenshot --out .\capture.png</span></span><span class="l"><span class="ok">✓ screenshot saved</span> <span class="dim">· capture.png</span></span></div>
+            <div class="terminal-entry" data-demo-index="3"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh debug watch --duration 5 --max 1</span></span><span class="l"><span class="ok">break addr=0x82001234</span> <span class="dim">· thread=0xFB000008</span></span></div>
           </div>
         </div>
       </div>
@@ -295,43 +341,51 @@
         <h2>Merged into major open-source projects</h2>
         <p>Fixes and features contributed to established projects and accepted by their maintainers.</p>
       </div>
-      <div class="card-grid">
-        <a class="card" href="https://github.com/rommapp/romm/pull/3945" target="_blank" rel="noopener noreferrer">
+      <div class="card-grid" id="mergedPrGrid">
+        <a class="card" data-pr-id="rommapp/romm#3945" href="https://github.com/rommapp/romm/pull/3945" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">ROM library</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">RomM</h3>
           <p class="card-desc">Surface empty platforms in the platform index for the self-hosted ROM manager.</p>
           <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="rommapp/romm"></span><span class="card-num">#3945</span></span><span class="card-link">View PR →</span></div>
         </a>
-        <a class="card" href="https://github.com/libretro/RetroArch/pull/19256" target="_blank" rel="noopener noreferrer">
+        <a class="card" data-pr-id="libretro/RetroArch#19256" href="https://github.com/libretro/RetroArch/pull/19256" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Libretro / emulation</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">RetroArch</h3>
           <p class="card-desc">Fix ZIP member selection when loading content from archives.</p>
           <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="libretro/RetroArch"></span><span class="card-num">#19256</span></span><span class="card-link">View PR →</span></div>
         </a>
-        <a class="card" href="https://github.com/xenia-canary/xenia-canary/pull/1085" target="_blank" rel="noopener noreferrer">
+        <a class="card" data-pr-id="xenia-canary/xenia-canary#1085" href="https://github.com/xenia-canary/xenia-canary/pull/1085" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Emulator research</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">Xenia Canary</h3>
           <p class="card-desc">GPU reset defaults derived from retail Xbox 360 hardware research.</p>
           <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="xenia-canary/xenia-canary"></span><span class="card-num">#1085</span></span><span class="card-link">View PR →</span></div>
         </a>
-        <a class="card" href="https://github.com/emoose/idaxex/pulls?q=is%3Apr+author%3ASaveEditors" target="_blank" rel="noopener noreferrer">
+        <a class="card" data-pr-id="emoose/idaxex#15" href="https://github.com/emoose/idaxex/pull/15" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">IDA loader</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">IDA XEX</h3>
-          <p class="card-desc">IDA Pro 9.3 loader support and corrected Visual Studio build behavior.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="emoose/idaxex"></span><span class="card-num">#15 · #17</span></span><span class="card-link">View PRs →</span></div>
+          <p class="card-desc">Update the Xbox 360 executable loader for IDA Pro 9.3.</p>
+          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="emoose/idaxex"></span><span class="card-num">#15</span></span><span class="card-link">View PR →</span></div>
         </a>
-        <a class="card" href="https://github.com/zeroKilo/XEXLoaderWV/pull/33" target="_blank" rel="noopener noreferrer">
+        <a class="card" data-pr-id="zeroKilo/XEXLoaderWV#33" href="https://github.com/zeroKilo/XEXLoaderWV/pull/33" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Binary analysis</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">XEXLoaderWV</h3>
           <p class="card-desc">PDB, type-information, and Xbox 360 <code>.pdata</code> parsing fixes for Ghidra.</p>
           <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="zeroKilo/XEXLoaderWV"></span><span class="card-num">#33</span></span><span class="card-link">View PR →</span></div>
         </a>
-        <a class="card" href="https://github.com/kododake/AABrowser/pull/51" target="_blank" rel="noopener noreferrer">
+        <a class="card" data-pr-id="kododake/AABrowser#51" href="https://github.com/kododake/AABrowser/pull/51" target="_blank" rel="noopener noreferrer">
           <div class="card-top"><span class="card-kicker">Interface engineering</span><span class="badge badge-merged">MERGED</span></div>
           <h3 class="card-title">AABrowser</h3>
           <p class="card-desc">Tabs, themes, scaling, start pages, sessions, and workflow controls.</p>
           <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="kododake/AABrowser"></span><span class="card-num">#51</span></span><span class="card-link">View PR →</span></div>
         </a>
+      </div>
+      <button class="merged-pr-disclosure" id="mergedPrControl" type="button" aria-controls="mergedPrReveal" aria-expanded="false">
+        <span class="merged-pr-summary-label" id="mergedPrSummaryLabel">View all merged PRs</span>
+        <span class="merged-pr-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></span>
+        <span class="merged-pr-summary-count" id="mergedPrSummaryCount">1 more · 7 total</span>
+      </button>
+      <div class="merged-pr-reveal" id="mergedPrReveal">
+        <div class="card-grid merged-pr-more-grid" id="mergedPrMoreGrid" aria-live="polite"></div>
       </div>
     </section>
 
@@ -339,7 +393,7 @@
       <div class="section-head">
         <p class="kicker">In review</p>
         <h2>Open pull requests, live</h2>
-        <p>Contributions currently in review across major open-source projects — status updates automatically and flips to merged when it lands.</p>
+        <p>Contributions currently in review across major open-source projects. Status updates automatically, and accepted work moves into the merged cards above.</p>
       </div>
       <div class="card-grid" id="prGrid">
         <p class="pr-loading">Loading contribution status…</p>
@@ -348,11 +402,10 @@
 
     <section class="support" id="support">
       <div>
-        <h2>Build with us</h2>
-        <p>Request a tool, report an issue, or help fund continued open-source development and research.</p>
+        <h2>Support continued development</h2>
+        <p>Help fund open-source tooling, console diagnostics, emulator development, and documentation.</p>
       </div>
       <div class="support-actions">
-        <a class="btn" href="https://whispermeter.com/feedback/SaveEditors" target="_blank" rel="noopener noreferrer">Request a tool</a>
         <a class="btn primary" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Support the work</a>
       </div>
     </section>
@@ -373,6 +426,181 @@
     "use strict";
     const htmlEscape = (value) => String(value ?? "")
       .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
+
+    const terminalDemos = [
+      { command: "rgh status", result: "✓ connected", note: "· XBDM · kernel 2.0.17559.0" },
+      { command: "rgh modules list", result: "default.xex", note: "· base 0x82000000" },
+      { command: "rgh screenshot --out .\\capture.png", result: "✓ screenshot saved", note: "· capture.png" },
+      { command: "rgh debug watch --duration 5 --max 1", result: "break addr=0x82001234", note: "· thread=0xFB000008" },
+      { command: "rgh xex dump --out .\\default.xex", result: "✓ XEX exported", note: "· default.xex" },
+      { command: "rgh mem hexdump --addr 0x82001234 --size 0x20", result: "82001234  7C 08 02 A6", note: "· PowerPC" },
+      { command: "rgh threads context --id 0xFB000008", result: "cia=0x82001234", note: "· lr=0x8210A6F8" },
+      { command: "rgh ftp list --path /Hdd1/", result: "✓ 14 entries", note: "· /Hdd1/" },
+      { command: "rgh jrpc2 temps", result: "CPU 54°C · GPU 52°C", note: "· EDRAM 49°C" },
+      { command: "rgh health", result: "✓ XBDM · ✓ memory", note: "· ✓ storage" },
+      { command: "rgh smc version", result: "SMC version 2.3", note: "· read-only probe" },
+      { command: "rgh fs list --path Hdd:\\", result: "Content · Games · Cache", note: "· Hdd:\\" },
+      { command: "rgh module info --name default.xex", result: "base=0x82000000", note: "· default.xex" },
+      { command: "rgh debug stop", result: "Execution stopped.", note: "· XBDM" },
+      { command: "rgh debug go", result: "Execution resumed.", note: "· XBDM" }
+    ];
+
+    function startXeCliTerminalDemo() {
+      const body = document.getElementById("xecliTerminalBody");
+      if (!body) return;
+      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+      let runToken = 0;
+      let isVisible = true;
+      let bag = [];
+      let lastIndex = 3;
+
+      const createEntry = (demoIndex, completed = true) => {
+        const demo = terminalDemos[demoIndex];
+        const entry = document.createElement("div");
+        entry.className = completed ? "terminal-entry" : "terminal-entry terminal-entry-new";
+        entry.dataset.demoIndex = String(demoIndex);
+
+        const commandLine = document.createElement("span");
+        commandLine.className = "l";
+        const prompt = document.createElement("span");
+        prompt.className = "cmd";
+        prompt.textContent = "$";
+        const value = document.createElement("span");
+        value.className = "terminal-value";
+        value.textContent = completed ? demo.command : "";
+        commandLine.append(prompt, document.createTextNode(" "), value);
+
+        const cursor = document.createElement("span");
+        cursor.className = "cur";
+        cursor.setAttribute("aria-hidden", "true");
+        if (!completed) commandLine.append(cursor);
+        entry.append(commandLine);
+
+        if (completed) {
+          const resultLine = document.createElement("span");
+          resultLine.className = "l";
+          const result = document.createElement("span");
+          result.className = "ok";
+          result.textContent = demo.result;
+          const note = document.createElement("span");
+          note.className = "dim";
+          note.textContent = ` ${demo.note}`;
+          resultLine.append(result, note);
+          entry.append(resultLine);
+        }
+
+        return { entry, value, cursor };
+      };
+
+      const renderSeed = () => {
+        body.replaceChildren(...[0, 1, 2, 3].map((index) => createEntry(index).entry));
+      };
+
+      const shuffle = (values) => {
+        for (let index = values.length - 1; index > 0; index -= 1) {
+          const swapIndex = Math.floor(Math.random() * (index + 1));
+          [values[index], values[swapIndex]] = [values[swapIndex], values[index]];
+        }
+        return values;
+      };
+
+      const nextDemoIndex = () => {
+        if (!bag.length) {
+          bag = shuffle(terminalDemos.map((_, index) => index));
+          if (bag[0] === lastIndex && bag.length > 1) [bag[0], bag[1]] = [bag[1], bag[0]];
+        }
+        const displayed = new Set([...body.children].map((entry) => Number(entry.dataset.demoIndex)));
+        const availableIndex = bag.findIndex((index) => !displayed.has(index));
+        const [demoIndex] = bag.splice(availableIndex >= 0 ? availableIndex : 0, 1);
+        lastIndex = demoIndex;
+        return demoIndex;
+      };
+
+      const wait = (milliseconds, token) => new Promise((resolve) => {
+        window.setTimeout(() => resolve(token === runToken), milliseconds);
+      });
+
+      const removeOldestEntry = async (token) => {
+        const oldest = body.firstElementChild;
+        if (!oldest || body.childElementCount < 4) return true;
+        if (typeof oldest.animate === "function") {
+          oldest.animate(
+            [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-5px)" }],
+            { duration: 150, easing: "ease-in", fill: "forwards" }
+          );
+          if (!await wait(150, token)) return false;
+        }
+        oldest.remove();
+        return token === runToken;
+      };
+
+      const appendTypedEntry = async (demoIndex, token) => {
+        const demo = terminalDemos[demoIndex];
+        const { entry, value, cursor } = createEntry(demoIndex, false);
+        body.append(entry);
+        body.scrollLeft = 0;
+        for (let index = 1; index <= demo.command.length; index += 1) {
+          const delay = demo.command[index - 1] === " " ? 34 : 21;
+          if (!await wait(delay, token)) return false;
+          value.textContent = demo.command.slice(0, index);
+        }
+        if (!await wait(140, token)) return false;
+        cursor.remove();
+
+        const resultLine = document.createElement("span");
+        resultLine.className = "l";
+        const result = document.createElement("span");
+        result.className = "ok";
+        result.textContent = demo.result;
+        const note = document.createElement("span");
+        note.className = "dim";
+        note.textContent = ` ${demo.note}`;
+        resultLine.append(result, note);
+        entry.append(resultLine);
+        if (typeof resultLine.animate === "function") {
+          resultLine.animate(
+            [{ opacity: 0, transform: "translateY(3px)" }, { opacity: 1, transform: "translateY(0)" }],
+            { duration: 180, easing: "ease-out" }
+          );
+        }
+        return true;
+      };
+
+      const runDemo = async (token) => {
+        if (!await wait(1600, token)) return;
+        while (token === runToken && isVisible && !document.hidden && !motionQuery.matches) {
+          const cycleStarted = performance.now();
+          const demoIndex = nextDemoIndex();
+          if (!await removeOldestEntry(token)) return;
+          if (!await appendTypedEntry(demoIndex, token)) return;
+          const remaining = Math.max(3000, 5200 - (performance.now() - cycleStarted));
+          if (!await wait(remaining, token)) return;
+        }
+      };
+
+      const restart = () => {
+        runToken += 1;
+        const token = runToken;
+        if (motionQuery.matches) {
+          renderSeed();
+          return;
+        }
+        if (isVisible && !document.hidden) runDemo(token);
+      };
+
+      renderSeed();
+      document.addEventListener("visibilitychange", restart);
+      if (typeof motionQuery.addEventListener === "function") motionQuery.addEventListener("change", restart);
+      else if (typeof motionQuery.addListener === "function") motionQuery.addListener(restart);
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver((entries) => {
+          isVisible = entries.some((entry) => entry.isIntersecting);
+          restart();
+        }, { threshold: 0.2 });
+        observer.observe(body);
+      }
+      restart();
+    }
 
     const starSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
 
@@ -419,8 +647,8 @@
       }
     }
 
-    async function loadCardStars() {
-      const els = document.querySelectorAll(".card-stars[data-stars-repo]");
+    async function loadCardStars(root = document) {
+      const els = root.querySelectorAll(".card-stars[data-stars-repo]");
       await Promise.all([...els].map(async (el) => {
         const stars = await fetchRepoStars(el.dataset.starsRepo);
         const label = formatStars(stars);
@@ -449,7 +677,147 @@
       { repo: "emoose/idaxex",       num: 19,    name: "IDA XEX",   label: "IDA loader",          blurb: "Update the loader for IDA Pro 9.4.",                     fallback: "review" }
     ];
 
-    const prStatusCacheKey = "saveeditors-pr-status-v2";
+    const mergedPrBatchSize = 3;
+    const mergedPrRecords = [
+      {
+        repo: "emoose/idaxex",
+        num: 17,
+        name: "IDA XEX",
+        label: "Build integration",
+        blurb: "Correct Visual Studio build behavior by excluding unused Qt helpers.",
+        url: "https://github.com/emoose/idaxex/pull/17"
+      }
+    ];
+    let mergedPrRevealedCount = 0;
+    let mergedPrAnimating = false;
+    let mergedPrAnimationTimer = 0;
+
+    function mergedPrId(item) {
+      return `${item.repo}#${item.num}`;
+    }
+
+    function getFeaturedMergedIds() {
+      return new Set([...document.querySelectorAll("#mergedPrGrid .card[data-pr-id]")].map((card) => card.dataset.prId));
+    }
+
+    function mergedPrCardMarkup(item, revealIndex) {
+      const starLabel = formatStars(item.stars);
+      const starsHtml = starLabel != null
+        ? `<span class="card-stars" title="${htmlEscape(item.stars.toLocaleString())} GitHub stars">${starSvg} ${starLabel}</span>`
+        : `<span class="card-stars" data-stars-repo="${htmlEscape(item.repo)}"></span>`;
+      return `<a class="card merged-pr-card" style="--reveal-index:${revealIndex}" data-pr-id="${htmlEscape(mergedPrId(item))}" href="${htmlEscape(item.url)}" target="_blank" rel="noopener noreferrer">
+        <div class="card-top"><span class="card-kicker">${htmlEscape(item.label)}</span><span class="badge badge-merged">MERGED</span></div>
+        <h3 class="card-title">${htmlEscape(item.name)}</h3>
+        <p class="card-desc">${htmlEscape(item.blurb || item.title)}</p>
+        <div class="card-foot"><span class="foot-left">${starsHtml}<span class="card-num">#${item.num}</span></span><span class="card-link">View PR →</span></div>
+      </a>`;
+    }
+
+    function updateMergedPrCount() {
+      const featuredCount = getFeaturedMergedIds().size;
+      const total = featuredCount + mergedPrRecords.length;
+      const remaining = mergedPrRecords.length - mergedPrRevealedCount;
+      const shown = featuredCount + mergedPrRevealedCount;
+      const control = document.getElementById("mergedPrControl");
+      const label = document.getElementById("mergedPrSummaryLabel");
+      const countLabel = document.getElementById("mergedPrSummaryCount");
+      const statMerged = document.getElementById("statMerged");
+      if (statMerged) statMerged.textContent = String(total);
+      if (!control || !label || !countLabel) return;
+
+      control.hidden = mergedPrRecords.length === 0;
+      control.setAttribute("aria-expanded", String(mergedPrRevealedCount > 0));
+      control.classList.toggle("is-exhausted", mergedPrRevealedCount > 0 && remaining === 0);
+
+      if (mergedPrRevealedCount > 0 && remaining === 0) {
+        label.textContent = "Hide additional PRs";
+        countLabel.textContent = `${shown} of ${total} shown`;
+        control.setAttribute("aria-label", "Hide additional merged pull requests");
+      } else if (mergedPrRevealedCount === 0) {
+        label.textContent = "View all merged PRs";
+        countLabel.textContent = `${remaining} more · ${total} total`;
+        control.setAttribute("aria-label", `View merged pull requests; ${remaining} more available`);
+      } else {
+        const nextCount = Math.min(mergedPrBatchSize, remaining);
+        label.textContent = `View next ${nextCount} merged ${nextCount === 1 ? "PR" : "PRs"}`;
+        countLabel.textContent = `${shown} of ${total} shown`;
+        control.setAttribute("aria-label", `View the next ${nextCount} merged pull ${nextCount === 1 ? "request" : "requests"}`);
+      }
+    }
+
+    function finishMergedPrAnimation(callback) {
+      window.clearTimeout(mergedPrAnimationTimer);
+      mergedPrAnimationTimer = window.setTimeout(() => {
+        callback();
+        mergedPrAnimating = false;
+      }, 780);
+    }
+
+    function collapseMergedPrCards() {
+      const reveal = document.getElementById("mergedPrReveal");
+      const grid = document.getElementById("mergedPrMoreGrid");
+      if (!reveal || !grid) return;
+      const complete = () => {
+        grid.replaceChildren();
+        mergedPrRevealedCount = 0;
+        reveal.style.height = "0px";
+        updateMergedPrCount();
+      };
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        complete();
+        return;
+      }
+      mergedPrAnimating = true;
+      reveal.style.height = `${reveal.getBoundingClientRect().height}px`;
+      reveal.getBoundingClientRect();
+      requestAnimationFrame(() => { reveal.style.height = "0px"; });
+      finishMergedPrAnimation(complete);
+    }
+
+    function revealNextMergedPrBatch() {
+      if (mergedPrAnimating) return;
+      const reveal = document.getElementById("mergedPrReveal");
+      const grid = document.getElementById("mergedPrMoreGrid");
+      if (!reveal || !grid) return;
+      const remaining = mergedPrRecords.length - mergedPrRevealedCount;
+      if (remaining === 0 && mergedPrRevealedCount > 0) {
+        collapseMergedPrCards();
+        return;
+      }
+
+      const nextItems = mergedPrRecords.slice(mergedPrRevealedCount, mergedPrRevealedCount + mergedPrBatchSize);
+      if (!nextItems.length) return;
+      const startHeight = reveal.getBoundingClientRect().height;
+      reveal.style.height = `${startHeight}px`;
+      grid.insertAdjacentHTML("beforeend", nextItems.map(mergedPrCardMarkup).join(""));
+      mergedPrRevealedCount += nextItems.length;
+      updateMergedPrCount();
+      loadCardStars(grid);
+
+      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        reveal.style.height = "auto";
+        return;
+      }
+      mergedPrAnimating = true;
+      reveal.getBoundingClientRect();
+      requestAnimationFrame(() => { reveal.style.height = `${reveal.scrollHeight}px`; });
+      finishMergedPrAnimation(() => { reveal.style.height = "auto"; });
+    }
+
+    function appendMergedContribution(item) {
+      const prId = mergedPrId(item);
+      if (getFeaturedMergedIds().has(prId) || mergedPrRecords.some((record) => mergedPrId(record) === prId)) return;
+      const record = {
+        ...item,
+        blurb: item.blurb || item.title,
+        url: item.url || `https://github.com/${item.repo}/pull/${item.num}`
+      };
+      if (mergedPrRevealedCount > 0) mergedPrRecords.push(record);
+      else mergedPrRecords.unshift(record);
+      updateMergedPrCount();
+    }
+
+    const prStatusCacheKey = "saveeditors-pr-status-v3";
     const prStatusTtlMs = 30 * 60 * 1000;
 
     function readPrStatusCache() {
@@ -466,7 +834,7 @@
       const cache = readPrStatusCache();
       const cached = cache[cacheId];
       if (cached && cached.status && Date.now() - cached.ts < prStatusTtlMs) {
-        return { status: cached.status, url: cached.url || webUrl, stars: cached.stars };
+        return { status: cached.status, url: cached.url || webUrl, stars: cached.stars, title: cached.title, mergedAt: cached.mergedAt };
       }
       try {
         const res = await fetch(`https://api.github.com/repos/${item.repo}/pulls/${item.num}`, {
@@ -480,12 +848,14 @@
         else status = "review";
         const url = pr.html_url || webUrl;
         const stars = pr.base && pr.base.repo ? pr.base.repo.stargazers_count : undefined;
+        const title = pr.title || item.blurb;
+        const mergedAt = pr.merged_at || null;
         if (typeof stars === "number") cacheRepoStars(item.repo, stars);
-        cache[cacheId] = { status, url, stars, ts: Date.now() };
+        cache[cacheId] = { status, url, stars, title, mergedAt, ts: Date.now() };
         writePrStatusCache(cache);
-        return { status, url, stars };
+        return { status, url, stars, title, mergedAt };
       } catch {
-        return { status: item.fallback || "review", url: webUrl, stars: undefined };
+        return { status: item.fallback || "review", url: webUrl, stars: undefined, title: item.blurb, mergedAt: null };
       }
     }
 
@@ -493,16 +863,14 @@
       const grid = document.getElementById("prGrid");
       if (!grid) return;
       const results = await Promise.all(contributions.map(async (item) => {
-        const { status, url, stars } = await fetchPrStatus(item);
-        return { ...item, status, url, stars };
+        const { status, url, stars, title, mergedAt } = await fetchPrStatus(item);
+        return { ...item, status, url, stars, title, mergedAt };
       }));
-      const rank = { merged: 0, review: 1 };
-      const visible = results.filter((r) => r.status !== "closed");
-      visible.sort((a, b) => (rank[a.status] ?? 9) - (rank[b.status] ?? 9));
+      results.filter((result) => result.status === "merged").forEach(appendMergedContribution);
+      const visible = results.filter((result) => result.status === "review");
 
-      const reviewCount = visible.filter((r) => r.status === "review").length;
       const statReview = document.getElementById("statReview");
-      if (statReview) statReview.textContent = String(reviewCount);
+      if (statReview) statReview.textContent = String(visible.length);
 
       if (!visible.length) {
         const section = grid.closest(".section");
@@ -510,27 +878,29 @@
         return;
       }
       grid.innerHTML = visible.map((r) => {
-        const merged = r.status === "merged";
-        const badgeClass = merged ? "badge-merged" : "badge-review";
-        const badgeText = merged ? "MERGED" : "IN REVIEW";
-        const linkText = merged ? "View PR →" : "Review →";
         const starLabel = formatStars(r.stars);
         const starsHtml = starLabel != null
           ? `<span class="card-stars" title="${htmlEscape(r.stars.toLocaleString())} GitHub stars">${starSvg} ${starLabel}</span>`
           : "";
         return `<a class="card" href="${htmlEscape(r.url)}" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">${htmlEscape(r.label)}</span><span class="badge ${badgeClass}">${badgeText}</span></div>
+          <div class="card-top"><span class="card-kicker">${htmlEscape(r.label)}</span><span class="badge badge-review">IN REVIEW</span></div>
           <h3 class="card-title">${htmlEscape(r.name)}</h3>
           <p class="card-desc">${htmlEscape(r.blurb)}</p>
-          <div class="card-foot"><span class="foot-left">${starsHtml}<span class="card-num">#${r.num}</span></span><span class="card-link">${linkText}</span></div>
+          <div class="card-foot"><span class="foot-left">${starsHtml}<span class="card-num">#${r.num}</span></span><span class="card-link">Review →</span></div>
         </a>`;
       }).join("");
     }
 
     document.getElementById("year").textContent = new Date().getFullYear();
+    document.getElementById("mergedPrControl")?.addEventListener("click", revealNextMergedPrBatch);
+    updateMergedPrCount();
+    startXeCliTerminalDemo();
     loadXecliStars();
     loadCardStars();
     loadContributions();
+    window.setInterval(() => {
+      if (!document.hidden) loadContributions();
+    }, prStatusTtlMs + 5000);
   </script>
 </body>
 </html>
