@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaveEditors · XeCLI and Xbox 360 tooling</title>
-  <meta name="description" content="XeCLI is a Windows toolkit for Xbox 360 RGH/JTAG consoles. SaveEditors also maintains Xbox 360 file-system, controller and Xenos graphics tools, and contributes fixes to Xenia, RetroArch and RomM.">
+  <title>XeCLI · Xbox 360 tooling</title>
+  <meta name="description" content="XeCLI is a Windows toolkit for Xbox 360 RGH/JTAG consoles. We also maintain Xbox 360 file-system, controller and Xenos graphics tools, and contributes fixes to Xenia, RetroArch and RomM.">
   <meta name="theme-color" content="#0e1013">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="SaveEditors · XeCLI and Xbox 360 tooling">
+  <meta property="og:title" content="XeCLI · Xbox 360 tooling">
   <meta property="og:description" content="XeCLI, a Windows toolkit for Xbox 360 RGH/JTAG consoles, plus related Xbox 360 tools and upstream fixes.">
-  <meta property="og:url" content="https://saveeditors.github.io/">
-  <meta property="og:image" content="https://raw.githubusercontent.com/SaveEditors/xecli/main/Assets/readme/xeterminal-v2.png">
+  <meta property="og:url" content="https://xecli.github.io/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/xecli/xecli/main/Assets/readme/xeterminal-v2.png">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -108,12 +108,12 @@
 <body>
   <header class="top">
     <div class="wrap">
-      <a class="name" href="./">SaveEditors</a>
+      <a class="name" href="./">xecli</a>
       <nav>
         <a href="#xecli">XeCLI</a>
         <a class="opt" href="#tools">Tools</a>
         <a class="opt" href="#upstream">Upstream</a>
-        <a href="https://github.com/SaveEditors">GitHub</a>
+        <a href="https://github.com/xecli">GitHub</a>
       </nav>
     </div>
   </header>
@@ -124,12 +124,12 @@
         <h1>XeCLI</h1>
         <p class="lead">A Windows toolkit for Xbox 360 RGH/JTAG consoles. Use <code>rgh.exe</code> from the command line or XeTerminal on the desktop to connect to a console, inspect executables and memory, move files and run diagnostics.</p>
         <div class="actions">
-          <a class="button primary" href="https://github.com/SaveEditors/xecli/releases/latest">Download</a>
-          <a class="button" href="https://github.com/SaveEditors/xecli/wiki">Documentation</a>
-          <a class="button" href="https://github.com/SaveEditors/xecli">Source</a>
+          <a class="button primary" href="https://github.com/xecli/xecli/releases/latest">Download</a>
+          <a class="button" href="https://github.com/xecli/xecli/wiki">Documentation</a>
+          <a class="button" href="https://github.com/xecli/xecli">Source</a>
         </div>
         <figure>
-          <img src="https://raw.githubusercontent.com/SaveEditors/xecli/main/Assets/readme/xeterminal-v2.png" alt="XeTerminal desktop interface in four color themes" width="1592" height="988" loading="eager">
+          <img src="https://raw.githubusercontent.com/xecli/xecli/main/Assets/readme/xeterminal-v2.png" alt="XeTerminal desktop interface in four color themes" width="1592" height="988" loading="eager">
           <figcaption>XeTerminal, the desktop interface included with XeCLI.</figcaption>
         </figure>
       </div>
@@ -150,7 +150,7 @@
 rgh status
 rgh modules list
 rgh screenshot --out .\capture.png</pre>
-        <p class="muted" style="margin-top:16px">Windows 10 or 11, x64. Full command reference in the <a href="https://github.com/SaveEditors/xecli/wiki">wiki</a>.</p>
+        <p class="muted" style="margin-top:16px">Windows 10 or 11, x64. Full command reference in the <a href="https://github.com/xecli/xecli/wiki">wiki</a>.</p>
       </div>
     </section>
 
@@ -159,23 +159,23 @@ rgh screenshot --out .\capture.png</pre>
         <h2>Other tools</h2>
         <ul class="list">
           <li>
-            <a class="title" href="https://github.com/SaveEditors/Xtaf-CLI">Xtaf-CLI</a> <span class="meta">C#</span>
+            <a class="title" href="https://github.com/xecli/Xtaf-CLI">Xtaf-CLI</a> <span class="meta">C#</span>
             <p>Mounts and recovers Xbox 360 FATX, STFS and GDFX images.</p>
           </li>
           <li>
-            <a class="title" href="https://github.com/SaveEditors/x360controller">x360controller</a> <span class="meta">Python</span>
+            <a class="title" href="https://github.com/xecli/x360controller">x360controller</a> <span class="meta">Python</span>
             <p>Controller bridge between Windows, Android and RGH/JTAG consoles.</p>
           </li>
           <li>
-            <a class="title" href="https://github.com/SaveEditors/XeCLI-XellFetch">XeCLI-XellFetch</a> <span class="meta">PowerShell</span>
+            <a class="title" href="https://github.com/xecli/XeCLI-XellFetch">XeCLI-XellFetch</a> <span class="meta">PowerShell</span>
             <p>XeLL payload that pulls NAND and keyvault data from a console over the network.</p>
           </li>
           <li>
-            <a class="title" href="https://github.com/SaveEditors/xenon-soft3d">xenon-soft3d</a> <span class="meta">C, libXenon</span>
+            <a class="title" href="https://github.com/xecli/xenon-soft3d">xenon-soft3d</a> <span class="meta">C, libXenon</span>
             <p>Software 3D rasterizer for Xbox 360 homebrew, drawing to the Xenos tiled framebuffer.</p>
           </li>
           <li>
-            <a class="title" href="https://github.com/SaveEditors/xenasm">xenasm</a> <span class="meta">Python, alpha</span>
+            <a class="title" href="https://github.com/xecli/xenasm">xenasm</a> <span class="meta">Python, alpha</span>
             <p>Builds and decodes Xenos GPU shader microcode. Output is checked against Xenia.</p>
           </li>
         </ul>
@@ -221,8 +221,8 @@ rgh screenshot --out .\capture.png</pre>
 
   <footer>
     <div class="wrap">
-      <span>© 2026 SaveEditors</span>
-      <span><a href="https://github.com/SaveEditors">GitHub</a> · <a href="https://x.com/SaveEditors">X</a> · <a href="https://ko-fi.com/saveeditors">Ko-fi</a></span>
+      <span>© 2026 xecli</span>
+      <span><a href="https://github.com/xecli">GitHub</a> · <a href="https://x.com/SaveEditors">X</a> · <a href="https://ko-fi.com/saveeditors">Ko-fi</a></span>
     </div>
   </footer>
 </body>
