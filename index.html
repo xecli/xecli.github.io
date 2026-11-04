@@ -3,1233 +3,227 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SaveEditors — open-source tools &amp; upstream contributions</title>
-  <meta name="description" content="SaveEditors builds practical open-source tools — including XeCLI, our terminal-first Xbox 360 development and diagnostics toolkit — and contributes fixes upstream to emulators, game engines, and developer tooling.">
-  <meta name="theme-color" content="#0a0d12">
+  <title>SaveEditors · XeCLI and Xbox 360 tooling</title>
+  <meta name="description" content="XeCLI is a Windows toolkit for Xbox 360 RGH/JTAG consoles. SaveEditors also maintains Xbox 360 file-system, controller and Xenos graphics tools, and contributes fixes to Xenia, RetroArch and RomM.">
+  <meta name="theme-color" content="#0e1013">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="SaveEditors — open-source tools &amp; upstream contributions">
-  <meta property="og:description" content="Practical open-source tools plus upstream fixes contributed to projects like RetroArch, Phaser, Xenia, RomM, and more.">
+  <meta property="og:title" content="SaveEditors · XeCLI and Xbox 360 tooling">
+  <meta property="og:description" content="XeCLI, a Windows toolkit for Xbox 360 RGH/JTAG consoles, plus related Xbox 360 tools and upstream fixes.">
   <meta property="og:url" content="https://saveeditors.github.io/">
+  <meta property="og:image" content="https://raw.githubusercontent.com/SaveEditors/xecli/main/Assets/readme/xeterminal-v2.png">
   <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
     :root{
-      --bg:#0a0d12;
-      --panel:#11161f;
-      --panel-2:#0e131b;
-      --line:#1f2733;
-      --line-soft:#171e28;
-      --text:#e8eef6;
-      --muted:#93a1b3;
-      --muted-2:#6d7c8e;
-      --accent:#5cc8f5;
-      --accent-ink:#04121c;
-      --green:#6fe0a3;
-      --green-bg:rgba(111,224,163,.12);
-      --green-line:rgba(111,224,163,.42);
-      --amber:#ffc178;
-      --amber-bg:rgba(255,193,120,.12);
-      --amber-line:rgba(255,193,120,.42);
-      --radius:16px;
-      --maxw:1120px;
+      --bg:#0e1013;
+      --surface:#15181d;
+      --line:#262b33;
+      --text:#e6e8eb;
+      --muted:#9aa1ab;
+      --accent:#7fcf4f;
+      --link:#8cc8ff;
+      --maxw:880px;
+    }
+    @media (prefers-color-scheme: light){
+      :root{
+        --bg:#fbfbfa;
+        --surface:#f1f1ef;
+        --line:#dcdcd8;
+        --text:#1b1d20;
+        --muted:#5e636b;
+        --accent:#3f8a1d;
+        --link:#0b5cad;
+      }
     }
     *{box-sizing:border-box}
-    html{scroll-behavior:smooth}
     body{
       margin:0;
-      font-family:"Inter",system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif;
+      background:var(--bg);
       color:var(--text);
-      background:
-        radial-gradient(1100px 560px at 82% -8%, rgba(92,200,245,.12), transparent 58%),
-        radial-gradient(900px 500px at -8% 6%, rgba(111,224,163,.07), transparent 55%),
-        var(--bg);
-      line-height:1.6;
+      font:16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
       -webkit-font-smoothing:antialiased;
-      overflow-x:hidden;
-      isolation:isolate;
     }
-    a{color:inherit;text-decoration:none}
-    ::selection{background:rgba(92,200,245,.28)}
+    a{color:var(--link)}
+    a:hover{text-decoration-thickness:2px}
+    code,kbd,.mono{font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:.92em}
+    .wrap{max-width:var(--maxw);margin:0 auto;padding:0 20px}
 
-    /* ---------- Ambient fireflies ---------- */
-    .ambient-sparkles{
-      position:fixed;inset:0;z-index:0;display:block;width:100%;height:100%;
-      pointer-events:none;opacity:.86;mix-blend-mode:screen;
-    }
-    main,.footer{position:relative;z-index:1}
+    header.top{border-bottom:1px solid var(--line)}
+    header.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:56px}
+    .name{font-weight:600;color:var(--text);text-decoration:none}
+    header nav{display:flex;gap:20px;font-size:.95rem}
+    header nav a{color:var(--muted);text-decoration:none}
+    header nav a:hover{color:var(--text)}
 
-    /* ---------- Nav ---------- */
-    .nav{
-      position:sticky;top:0;z-index:50;
-      display:flex;align-items:center;justify-content:space-between;gap:16px;
-      padding:14px clamp(16px,4vw,40px);
-      background:rgba(10,13,18,.72);
-      backdrop-filter:blur(12px);
-      border-bottom:1px solid var(--line-soft);
-    }
-    .nav:before{
-      content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;pointer-events:none;
-      background:linear-gradient(90deg,transparent 0%,rgba(92,200,245,.14) 22%,rgba(111,224,163,.12) 50%,rgba(92,200,245,.14) 78%,transparent 100%);
-    }
-    .nav:after{
-      content:"";position:absolute;left:-160px;bottom:-1px;width:160px;height:2px;pointer-events:none;
-      background:linear-gradient(90deg,transparent 0%,rgba(92,200,245,.06) 18%,rgba(92,200,245,.42) 38%,rgba(232,250,255,.9) 50%,rgba(111,224,163,.46) 62%,rgba(111,224,163,.08) 82%,transparent 100%);
-      filter:drop-shadow(0 0 3px rgba(92,200,245,.52)) drop-shadow(0 0 6px rgba(111,224,163,.2));
-      will-change:transform,opacity;
-      animation:navLightSweep 31.5s linear -7s infinite;
-    }
-    @keyframes navLightSweep{
-      0%,25.4%{transform:translate3d(0,0,0);opacity:0}
-      28%{opacity:.84}
-      94%{transform:translate3d(calc(100vw + 320px),0,0);opacity:.84}
-      96%,100%{transform:translate3d(calc(100vw + 320px),0,0);opacity:0}
-    }
-    .brand{display:inline-flex;align-items:center;gap:9px;font-weight:800;letter-spacing:-.01em;font-size:1.02rem}
-    .brand svg{width:20px;height:20px;fill:var(--accent)}
-    .nav-links{display:flex;align-items:center;gap:6px}
-    .nav-links a{
-      padding:7px 12px;border-radius:9px;color:var(--muted);font-size:.9rem;font-weight:600;
-      transition:color .15s ease,background .15s ease;
-    }
-    .nav-links a:hover{color:var(--text);background:rgba(255,255,255,.04)}
-    .nav-links .nav-gh{display:inline-flex;align-items:center;gap:7px;color:var(--text);border:1px solid var(--line);}
-    .nav-links .nav-gh svg{width:15px;height:15px;fill:currentColor}
-    @media (max-width:680px){ .nav-links .nav-hide{display:none} }
+    section{padding:56px 0;border-bottom:1px solid var(--line)}
+    section:last-of-type{border-bottom:0}
+    h1{font-size:2.4rem;line-height:1.15;margin:0 0 12px;font-weight:600;letter-spacing:-.01em}
+    h2{font-size:1.35rem;margin:0 0 20px;font-weight:600}
+    p{margin:0 0 16px}
+    .lead{font-size:1.15rem;color:var(--text);max-width:62ch}
+    .muted{color:var(--muted)}
 
-    /* ---------- Layout ---------- */
-    main{max-width:var(--maxw);margin:0 auto;padding:0 clamp(16px,4vw,40px)}
-    .section{padding:clamp(48px,7vw,88px) 0;border-top:1px solid var(--line-soft)}
-    .section:first-of-type{border-top:none}
-    .section-head{max-width:640px;margin-bottom:34px}
-    .kicker{margin:0 0 10px;color:var(--accent);font-size:.76rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase}
-    .section-head h2{margin:0 0 10px;font-size:clamp(1.5rem,3.4vw,2.1rem);letter-spacing:-.03em;line-height:1.15}
-    .section-head p{margin:0;color:var(--muted);font-size:1rem}
-    .xecli-title-shine{position:relative;display:block;width:fit-content;max-width:100%;isolation:isolate}
-    .xecli-title-shine:after{
-      content:attr(data-shine-text);position:absolute;inset:0;z-index:1;display:block;pointer-events:none;
-      color:transparent;font:inherit;letter-spacing:inherit;line-height:inherit;
-      background:linear-gradient(108deg,transparent 35%,rgba(92,200,245,.16) 43%,rgba(235,251,255,.96) 50%,rgba(111,224,163,.34) 57%,transparent 65%);
-      background-size:260% 100%;background-position:145% 0;
-      -webkit-background-clip:text;background-clip:text;
-      will-change:background-position,opacity;
-      animation:xecliTitleShine 12.6s ease-in-out 1.6s infinite;
+    .actions{display:flex;flex-wrap:wrap;gap:10px;margin:24px 0 32px}
+    .button{
+      display:inline-block;padding:8px 16px;border:1px solid var(--line);border-radius:6px;
+      color:var(--text);text-decoration:none;font-weight:500;background:var(--surface)
     }
-    @keyframes xecliTitleShine{
-      0%,26%{background-position:145% 0;opacity:0}
-      32%{opacity:.9}
-      66%{background-position:-45% 0;opacity:.9}
-      72%,100%{background-position:-45% 0;opacity:0}
+    .button:hover{border-color:var(--muted)}
+    .button.primary{background:var(--accent);border-color:var(--accent);color:#0b0d0f}
+
+    figure{margin:0}
+    figure img{display:block;width:100%;height:auto;border:1px solid var(--line);border-radius:6px}
+    figcaption{margin-top:8px;font-size:.85rem;color:var(--muted)}
+
+    dl.features{display:grid;grid-template-columns:minmax(140px,max-content) 1fr;gap:10px 24px;margin:0}
+    dl.features dt{font-weight:600}
+    dl.features dd{margin:0;color:var(--muted)}
+
+    pre{
+      margin:24px 0 0;padding:16px;background:var(--surface);border:1px solid var(--line);
+      border-radius:6px;overflow-x:auto;font-family:"IBM Plex Mono",ui-monospace,Consolas,monospace;font-size:.88rem;line-height:1.7
     }
 
-    /* ---------- Hero ---------- */
-    .hero{
-      display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,.95fr);
-      gap:clamp(28px,5vw,56px);align-items:center;
-      padding:clamp(48px,8vw,96px) 0 clamp(40px,6vw,72px);
-    }
-    .hero-text,.hero-visual{min-width:0}
-    .hero h1{margin:0 0 16px;font-size:clamp(2.6rem,7vw,4.6rem);line-height:.98;letter-spacing:-.045em;font-weight:850}
-    .hero-brand-shine{
-      position:relative;width:fit-content;max-width:100%;color:var(--text);-webkit-text-fill-color:currentColor;
-    }
-    .hero-brand-shine:after{
-      content:attr(data-shine-text);position:absolute;inset:0;display:block;pointer-events:none;
-      color:transparent;-webkit-text-fill-color:transparent;font:inherit;letter-spacing:inherit;line-height:inherit;
-      background:linear-gradient(108deg,transparent 31%,rgba(92,200,245,.24) 40%,rgba(241,252,255,1) 48%,rgba(92,200,245,.96) 52%,rgba(168,239,208,.72) 58%,transparent 68%);
-      background-size:240% 100%;background-position:145% 0;
-      -webkit-background-clip:text;background-clip:text;
-      filter:drop-shadow(0 0 10px rgba(92,200,245,.2));
-      will-change:background-position,opacity;
-      animation:heroBrandShine 10.8s ease-in-out -1.2s infinite;
-    }
-    @keyframes heroBrandShine{
-      0%,14%{background-position:145% 0;opacity:0}
-      20%{opacity:1}
-      62%{background-position:-45% 0;opacity:1}
-      70%,100%{background-position:-45% 0;opacity:0}
-    }
-    .hero .lead{margin:0 0 26px;max-width:520px;color:var(--muted);font-size:clamp(1.02rem,1.6vw,1.18rem)}
-    .cta-row{display:flex;flex-wrap:wrap;gap:12px;margin-bottom:34px}
-    .btn{
-      display:inline-flex;align-items:center;gap:9px;
-      padding:12px 18px;border-radius:11px;font-size:.94rem;font-weight:700;
-      border:1px solid var(--line);color:var(--text);
-      transition:transform .16s ease,border-color .16s ease,background .16s ease;
-    }
-    .btn svg{width:16px;height:16px;fill:currentColor}
-    .btn:hover{transform:translateY(-2px);border-color:#33465b;background:rgba(255,255,255,.03)}
-    .btn.primary{background:var(--accent);color:var(--accent-ink);border-color:transparent;box-shadow:0 10px 26px rgba(92,200,245,.22)}
-    .btn.primary:hover{background:#74d2f8;border-color:transparent}
-    .stats{display:flex;flex-wrap:wrap;gap:12px}
-    .stat{
-      flex:1 1 auto;min-width:120px;
-      padding:14px 16px;border:1px solid var(--line);border-radius:13px;background:var(--panel-2);
-    }
-    .stat b{display:block;font-size:1.5rem;letter-spacing:-.02em;line-height:1.1}
-    .stat span{display:block;margin-top:3px;color:var(--muted-2);font-size:.74rem;font-weight:600;letter-spacing:.02em;text-transform:uppercase}
+    ul.list{list-style:none;margin:0;padding:0}
+    ul.list li{padding:14px 0;border-top:1px solid var(--line)}
+    ul.list li:first-child{border-top:0;padding-top:0}
+    ul.list .title{font-weight:600}
+    ul.list .meta{color:var(--muted);font-size:.9rem}
+    ul.list p{margin:4px 0 0;color:var(--muted)}
 
-    /* ---------- Terminal ---------- */
-    .terminal{
-      border:1px solid #22303f;border-radius:var(--radius);overflow:hidden;
-      background:#070b10;box-shadow:0 26px 60px rgba(0,0,0,.5);
-      font:500 .82rem/1.75 ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    }
-    .terminal-bar{display:flex;align-items:center;gap:7px;padding:11px 14px;background:#0c131b;border-bottom:1px solid #1a2531;color:#5f7183}
-    .tdot{width:10px;height:10px;border-radius:50%;background:#ff6058}.tdot:nth-child(2){background:#ffbe2f}.tdot:nth-child(3){background:#2bca42}
-    .terminal-title{margin-left:8px;font-size:.72rem;letter-spacing:.04em}
-    .terminal-body{min-height:218px;padding:16px 18px 20px;color:#9db4c6;overflow-x:auto;overflow-y:hidden}
-    .terminal-entry{min-width:max-content}
-    .terminal-entry + .terminal-entry{margin-top:3px}
-    .terminal-entry-new{animation:terminalEntryIn .24s ease-out both}
-    .terminal-body .l{display:block;white-space:pre}
-    .cmd{color:var(--accent)}.arg,.terminal-value{color:#e8eef6}.ok{color:var(--green)}.dim{color:#5f7183}
-    .cur{display:inline-block;width:8px;height:1.05em;margin-left:2px;background:var(--green);vertical-align:-.15em;animation:blink 1.1s steps(1) infinite}
-    @keyframes blink{50%{opacity:0}}
-    @keyframes terminalEntryIn{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+    footer{padding:32px 0 48px;color:var(--muted);font-size:.9rem}
+    footer .wrap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px}
 
-    /* ---------- Feature grid ---------- */
-    .feature-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:26px}
-    .feature{padding:20px;border:1px solid var(--line);border-radius:14px;background:var(--panel)}
-    .feature .fi{width:38px;height:38px;display:grid;place-items:center;border-radius:10px;background:rgba(92,200,245,.12);color:var(--accent);margin-bottom:14px}
-    .feature .fi svg{width:19px;height:19px;fill:currentColor}
-    .feature h3{margin:0 0 6px;font-size:1rem;letter-spacing:-.01em}
-    .feature p{margin:0;color:var(--muted);font-size:.86rem;line-height:1.55}
-    .tags{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:26px}
-    .tag{padding:6px 11px;border:1px solid var(--line);border-radius:999px;color:var(--muted);background:var(--panel-2);font-size:.78rem;font-weight:600}
-    .btn-row{display:flex;flex-wrap:wrap;gap:12px}
-
-    /* ---------- Side projects ---------- */
-    .project-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-    .project-card{
-      --project-accent:92,200,245;
-      position:relative;isolation:isolate;overflow:hidden;
-      display:flex;flex-direction:column;min-height:330px;padding:22px;
-      border:1px solid var(--line);border-radius:var(--radius);
-      background:
-        radial-gradient(380px 210px at 10% 0%,rgba(var(--project-accent),.1),transparent 64%),
-        var(--panel);
-      transition:transform .18s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
-    }
-    .project-card:before{
-      content:"";position:absolute;z-index:-1;top:0;left:22px;right:22px;height:1px;
-      background:linear-gradient(90deg,transparent,rgba(var(--project-accent),.82),transparent);
-    }
-    .project-card:hover{
-      transform:translateY(-3px);border-color:rgba(var(--project-accent),.46);
-      box-shadow:0 20px 46px rgba(0,0,0,.24);
-    }
-    .project-card:focus-visible{outline:2px solid rgb(var(--project-accent));outline-offset:4px}
-    .project-xenon{--project-accent:92,200,245}
-    .project-xenasm{--project-accent:174,142,255}
-    .project-dominator{--project-accent:255,193,120}
-    .project-card-top{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:20px}
-    .project-icon{
-      display:grid;place-items:center;width:44px;height:44px;border:1px solid rgba(var(--project-accent),.3);
-      border-radius:12px;background:rgba(var(--project-accent),.1);color:rgb(var(--project-accent));
-    }
-    .project-icon svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-    .project-platform{
-      padding:5px 9px;border:1px solid rgba(var(--project-accent),.25);border-radius:999px;
-      background:rgba(var(--project-accent),.07);color:rgb(var(--project-accent));
-      font:750 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em;
-    }
-    .project-category{margin:0 0 6px;color:rgb(var(--project-accent));font-size:.68rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
-    .project-card h3{margin:0;font-size:1.25rem;letter-spacing:-.025em}
-    .project-card-desc{margin:9px 0 18px;color:var(--muted);font-size:.88rem;line-height:1.6}
-    .project-tags{display:flex;flex-wrap:wrap;gap:7px;margin-top:auto}
-    .project-tags span{padding:5px 8px;border:1px solid var(--line);border-radius:7px;background:var(--panel-2);color:var(--muted);font-size:.69rem;font-weight:650}
-    .project-card-foot{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:18px;padding-top:15px;border-top:1px solid var(--line-soft)}
-    .project-link{color:rgb(var(--project-accent));font-size:.82rem;font-weight:750;white-space:nowrap}
-    .project-card:hover .project-link{text-decoration:underline}
-
-    /* ---------- Contribution cards ---------- */
-    .card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
-    .card{
-      display:flex;flex-direction:column;
-      padding:18px;border:1px solid var(--line);border-radius:14px;background:var(--panel);
-      transition:transform .16s ease,border-color .16s ease,background .16s ease;
-    }
-    .card:hover{transform:translateY(-3px);border-color:#33465b;background:#141b25}
-    .card-top{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px}
-    .card-kicker{color:var(--accent);font-size:.68rem;font-weight:800;letter-spacing:.11em;text-transform:uppercase}
-    .badge{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;border-radius:999px;font:800 .62rem/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.06em;white-space:nowrap}
-    .badge:before{content:"";width:6px;height:6px;border-radius:50%;background:currentColor}
-    .badge-merged{color:var(--green);background:var(--green-bg);border:1px solid var(--green-line)}
-    .badge-review{color:var(--amber);background:var(--amber-bg);border:1px solid var(--amber-line)}
-    .card-title{margin:0;font-size:1.14rem;letter-spacing:-.02em}
-    .card-desc{margin:7px 0 0;color:var(--muted);font-size:.87rem;line-height:1.55}
-    .card-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line-soft)}
-    .card-num{color:var(--muted-2);font:700 .8rem/1 ui-monospace,SFMono-Regular,Consolas,monospace}
-    .card-link{color:var(--accent);font-size:.82rem;font-weight:700;white-space:nowrap}
-    .card:hover .card-link{text-decoration:underline}
-    .foot-left{display:inline-flex;align-items:center;gap:12px;min-width:0}
-    .card-stars{display:inline-flex;align-items:center;gap:4px;color:var(--muted-2);font-size:.76rem;font-weight:700;font-variant-numeric:tabular-nums}
-    .card-stars svg{width:12px;height:12px;fill:#ffc760;opacity:.9}
-    .stat b .star{fill:#ffc760;width:16px;height:16px;vertical-align:-2px;margin-right:3px}
-    .pr-loading{grid-column:1/-1;margin:0;color:var(--muted-2);font-size:.9rem}
-
-    /* ---------- Incremental merged PR disclosure ---------- */
-    .merged-pr-disclosure{
-      position:relative;display:grid;place-items:center;width:100%;min-height:52px;margin-top:34px;
-      padding:0;border:0;background:transparent;color:var(--muted);font:inherit;cursor:pointer;user-select:none;
-    }
-    .merged-pr-disclosure:before{
-      content:"";position:absolute;left:0;right:0;top:50%;height:1px;
-      background:linear-gradient(90deg,transparent,var(--line) 8%,#2a3747 50%,var(--line) 92%,transparent);
-    }
-    .merged-pr-summary-label,.merged-pr-summary-count{
-      position:absolute;top:50%;z-index:1;transform:translateY(-50%);
-      padding:0 12px;background:var(--bg);font-size:.76rem;font-weight:750;letter-spacing:.04em;
-    }
-    .merged-pr-summary-label{left:0;text-transform:uppercase}
-    .merged-pr-summary-count{right:0;color:var(--muted-2);font:700 .72rem/1 ui-monospace,SFMono-Regular,Consolas,monospace}
-    .merged-pr-chevron{
-      position:relative;z-index:2;display:grid;place-items:center;width:38px;height:38px;
-      border:1px solid #314154;border-radius:50%;background:var(--panel);
-      color:var(--accent);box-shadow:0 8px 24px rgba(0,0,0,.28);
-      transition:transform .22s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease;
-    }
-    .merged-pr-chevron svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
-    .merged-pr-disclosure:hover .merged-pr-chevron{border-color:var(--accent);background:#131c27;box-shadow:0 8px 28px rgba(92,200,245,.14)}
-    .merged-pr-disclosure:focus-visible{outline:2px solid var(--accent);outline-offset:5px;border-radius:10px}
-    .merged-pr-disclosure.is-exhausted .merged-pr-chevron{transform:rotate(180deg)}
-    .merged-pr-disclosure[hidden]{display:none}
-    .merged-pr-reveal{height:0;overflow:hidden;transition:height .72s cubic-bezier(.22,1,.36,1)}
-    .merged-pr-more-grid{padding-top:15px}
-    .merged-pr-card{
-      transform-origin:top center;
-      animation:mergedPrCardIn .62s cubic-bezier(.22,1,.36,1) both;
-      animation-delay:calc(var(--reveal-index,0) * 110ms);
-    }
-    @keyframes mergedPrCardIn{
-      from{opacity:0;transform:translateY(-18px) scale(.985)}
-      to{opacity:1;transform:translateY(0) scale(1)}
-    }
-
-    /* ---------- Support ---------- */
-    .support{
-      margin:clamp(48px,7vw,88px) 0;padding:clamp(28px,4vw,44px);
-      border:1px solid var(--line);border-radius:var(--radius);
-      background:
-        radial-gradient(600px 260px at 90% 0%, rgba(92,200,245,.1), transparent 65%),
-        var(--panel);
-      display:grid;grid-template-columns:1fr auto;gap:22px;align-items:center;
-    }
-    .support h2{margin:0 0 6px;font-size:clamp(1.3rem,2.6vw,1.7rem);letter-spacing:-.02em}
-    .support p{margin:0;color:var(--muted);max-width:520px}
-    .support-actions{display:flex;flex-wrap:wrap;gap:12px}
-
-    /* ---------- Footer ---------- */
-    .footer{
-      max-width:var(--maxw);margin:0 auto;padding:28px clamp(16px,4vw,40px) 44px;
-      border-top:1px solid var(--line-soft);
-      display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:12px;
-      color:var(--muted-2);font-size:.84rem;
-    }
-    .footer a{color:var(--muted)}
-    .footer a:hover{color:var(--text)}
-    .footer .dot{margin:0 8px;opacity:.5}
-
-    /* ---------- Responsive ---------- */
-    @media (max-width:900px){
-      .hero{grid-template-columns:1fr;padding-top:clamp(36px,8vw,56px)}
-      .hero-visual{order:2}
-      .feature-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .project-grid,.card-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-      .support{grid-template-columns:1fr}
-    }
-    @media (max-width:560px){
-      .feature-grid,.project-grid,.card-grid{grid-template-columns:1fr}
-      .stat{min-width:0}
-      .btn{flex:1 1 auto;justify-content:center}
-      .merged-pr-summary-label{padding-left:0;font-size:.68rem}
-      .merged-pr-summary-count{padding-right:0;font-size:.66rem}
-    }
-    @media (prefers-reduced-motion:reduce){
-      html{scroll-behavior:auto}
-      .cur,.terminal-entry-new,.merged-pr-card{animation:none}
-      .merged-pr-chevron,.merged-pr-reveal{transition:none}
-      .nav:after{display:none}
-      .xecli-title-shine:after{display:none}
-      .hero-brand-shine:after{display:none}
-      .project-card{transition:none}
+    @media (max-width:600px){
+      h1{font-size:2rem}
+      header nav{gap:14px}
+      header nav .opt{display:none}
+      dl.features{grid-template-columns:1fr;gap:2px}
+      dl.features dd{margin-bottom:12px}
     }
   </style>
 </head>
 <body>
-  <canvas class="ambient-sparkles" id="ambientSparkles" aria-hidden="true"></canvas>
-  <header class="nav">
-    <a class="brand" href="#top" aria-label="SaveEditors">
-      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.08.55-.17.55-.39l-.01-1.37c-2.01.44-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.53-.01-.54.63-.01 1.08.58 1.23.82.72 1.21 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.54 7.54 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .22.15.48.55.39A8 8 0 0 0 8 0Z"></path></svg>
-      SaveEditors
-    </a>
-    <nav class="nav-links">
-      <a class="nav-hide" href="#xecli">XeCLI</a>
-      <a class="nav-hide" href="#projects">Projects</a>
-      <a class="nav-hide" href="#contributions">Contributions</a>
-      <a class="nav-hide" href="#support">Support</a>
-      <a class="nav-gh" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
-        <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.08.55-.17.55-.39l-.01-1.37c-2.01.44-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.53-.01-.54.63-.01 1.08.58 1.23.82.72 1.21 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.54 7.54 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .22.15.48.55.39A8 8 0 0 0 8 0Z"></path></svg>
-        GitHub
-      </a>
-    </nav>
+  <header class="top">
+    <div class="wrap">
+      <a class="name" href="./">SaveEditors</a>
+      <nav>
+        <a href="#xecli">XeCLI</a>
+        <a class="opt" href="#tools">Tools</a>
+        <a class="opt" href="#upstream">Upstream</a>
+        <a href="https://github.com/SaveEditors">GitHub</a>
+      </nav>
+    </div>
   </header>
 
-  <main id="top">
-    <section class="hero">
-      <div class="hero-text">
-        <p class="kicker">Xbox 360 console toolkit</p>
-        <h1 class="hero-brand-shine" data-shine-text="XeCLI">XeCLI</h1>
-        <p class="lead">A terminal-first toolkit for RGH/JTAG console diagnostics, file management, executable inspection, memory access, and repeatable workflows.</p>
-        <div class="cta-row">
-          <a class="btn primary" href="#xecli">Explore XeCLI</a>
-          <a class="btn" href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">
-            <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 0a8 8 0 0 0-2.53 15.59c.4.08.55-.17.55-.39l-.01-1.37c-2.01.44-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.53-.01-.54.63-.01 1.08.58 1.23.82.72 1.21 1.88.87 2.34.66.07-.52.28-.87.5-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.58.82-2.14-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.54 7.54 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.14 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48l-.01 2.2c0 .22.15.48.55.39A8 8 0 0 0 8 0Z"></path></svg>
-            GitHub
-          </a>
-          <a class="btn" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Support</a>
+  <main>
+    <section id="xecli">
+      <div class="wrap">
+        <h1>XeCLI</h1>
+        <p class="lead">A Windows toolkit for Xbox 360 RGH/JTAG consoles. Use <code>rgh.exe</code> from the command line or XeTerminal on the desktop to connect to a console, inspect executables and memory, move files and run diagnostics.</p>
+        <div class="actions">
+          <a class="button primary" href="https://github.com/SaveEditors/xecli/releases/latest">Download</a>
+          <a class="button" href="https://github.com/SaveEditors/xecli/wiki">Documentation</a>
+          <a class="button" href="https://github.com/SaveEditors/xecli">Source</a>
         </div>
-        <div class="stats">
-          <div class="stat"><b id="xecliStars">—</b><span>XeCLI GitHub stars</span></div>
-          <div class="stat"><b id="statMerged">7</b><span>PRs merged upstream</span></div>
-          <div class="stat"><b id="statReview">5</b><span>PRs in review</span></div>
-        </div>
-      </div>
-      <div class="hero-visual">
-        <div class="terminal" aria-label="Animated XeCLI command examples">
-          <div class="terminal-bar"><span class="tdot"></span><span class="tdot"></span><span class="tdot"></span><span class="terminal-title">saveeditors — xecli</span></div>
-          <div class="terminal-body" id="xecliTerminalBody" aria-live="off">
-            <div class="terminal-entry" data-demo-index="0"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh status</span></span><span class="l"><span class="ok">✓ connected</span> <span class="dim">· XBDM · kernel 2.0.17559.0</span></span></div>
-            <div class="terminal-entry" data-demo-index="1"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh modules list</span></span><span class="l"><span class="ok">default.xex</span> <span class="dim">· base 0x82000000</span></span></div>
-            <div class="terminal-entry" data-demo-index="2"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh screenshot --out .\capture.png</span></span><span class="l"><span class="ok">✓ screenshot saved</span> <span class="dim">· capture.png</span></span></div>
-            <div class="terminal-entry" data-demo-index="3"><span class="l"><span class="cmd">$</span> <span class="terminal-value">rgh debug watch --duration 5 --max 1</span></span><span class="l"><span class="ok">break addr=0x82001234</span> <span class="dim">· thread=0xFB000008</span></span></div>
-          </div>
-        </div>
+        <figure>
+          <img src="https://raw.githubusercontent.com/SaveEditors/xecli/main/Assets/readme/xeterminal-v2.png" alt="XeTerminal desktop interface in four color themes" width="1592" height="988" loading="eager">
+          <figcaption>XeTerminal, the desktop interface included with XeCLI.</figcaption>
+        </figure>
       </div>
     </section>
 
-    <section class="section" id="xecli">
-      <div class="section-head">
-        <p class="kicker">Flagship project</p>
-        <h2 class="xecli-title-shine" data-shine-text="XeCLI — terminal-first Xbox 360 toolkit">XeCLI — terminal-first Xbox 360 toolkit</h2>
-        <p>A terminal-first toolkit with command-line and desktop interfaces for RGH/JTAG consoles: link over XBDM, JRPC2, and FTP, dump and inspect XEX executables, inspect memory, run diagnostics, and automate repeatable console workflows.</p>
-      </div>
-      <div class="feature-grid">
-        <div class="feature">
-          <span class="fi"><svg viewBox="0 0 24 24"><path d="M4 5h16a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Zm2 3v2l3 2-3 2v2l6-4-6-4Zm7 6h5v2h-5v-2ZM3 19h18v2H3v-2Z"/></svg></span>
-          <h3>Console link</h3>
-          <p>Connect to RGH/JTAG consoles over XBDM, JRPC2, and FTP from one client.</p>
-        </div>
-        <div class="feature">
-          <span class="fi"><svg viewBox="0 0 24 24"><path d="M6 2h9l5 5v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1Zm8 1.5V8h4.5L14 3.5ZM8 12h8v2H8v-2Zm0 4h8v2H8v-2Z"/></svg></span>
-          <h3>XEX tooling</h3>
-          <p>Dump, inspect, and work with XEX executables and loaded modules.</p>
-        </div>
-        <div class="feature">
-          <span class="fi"><svg viewBox="0 0 24 24"><path d="M4 4h16v6H4V4Zm2 2v2h3V6H6Zm-2 8h16v6H4v-6Zm2 2v2h3v-2H6Zm10-9h2v2h-2V7Zm0 10h2v2h-2v-2Z"/></svg></span>
-          <h3>Memory &amp; diagnostics</h3>
-          <p>Peek and poke memory, and run transport, memory, and storage health checks.</p>
-        </div>
-        <div class="feature">
-          <span class="fi"><svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1 0 10 10h-2a8 8 0 1 1-8-8V2Zm1 4h-2v6l4.5 2.6 1-1.7L13 11V6Z"/></svg></span>
-          <h3>Automation</h3>
-          <p>Script repeatable console workflows and diagnostics straight from the terminal.</p>
-        </div>
-      </div>
-      <div class="tags">
-        <span class="tag">XBDM</span><span class="tag">JRPC2</span><span class="tag">FTP</span><span class="tag">XEX dumping</span><span class="tag">Memory inspection</span><span class="tag">Diagnostics</span><span class="tag">Automation</span>
-      </div>
-      <div class="btn-row">
-        <a class="btn primary" href="https://github.com/SaveEditors/xecli" target="_blank" rel="noopener noreferrer">View repository</a>
-        <a class="btn" href="https://github.com/SaveEditors/xecli/wiki" target="_blank" rel="noopener noreferrer">Documentation</a>
-        <a class="btn" href="https://github.com/SaveEditors/xecli/releases" target="_blank" rel="noopener noreferrer">Releases</a>
+    <section>
+      <div class="wrap">
+        <h2>What it does</h2>
+        <dl class="features">
+          <dt>Connect</dt><dd>Talks to RGH/JTAG consoles over XBDM, JRPC2 and FTP.</dd>
+          <dt>Executables</dt><dd>Dumps and inspects XEX files and loaded modules.</dd>
+          <dt>Memory</dt><dd>Reads and writes console memory, with breakpoint watching.</dd>
+          <dt>Files</dt><dd>Browses and transfers files on the console's drives.</dd>
+          <dt>Diagnostics</dt><dd>Checks transport, memory and storage health.</dd>
+          <dt>Scripting</dt><dd>Every command runs from PowerShell or a batch file.</dd>
+        </dl>
+<pre>rgh start
+rgh status
+rgh modules list
+rgh screenshot --out .\capture.png</pre>
+        <p class="muted" style="margin-top:16px">Windows 10 or 11, x64. Full command reference in the <a href="https://github.com/SaveEditors/xecli/wiki">wiki</a>.</p>
       </div>
     </section>
 
-    <section class="section" id="projects">
-      <div class="section-head">
-        <p class="kicker">Side projects</p>
-        <h2>Focused tools and research projects</h2>
-        <p>Independent projects spanning Xbox 360 graphics research, Xenos shader tooling, and native Windows device configuration.</p>
-      </div>
-      <div class="project-grid">
-        <a class="project-card project-xenon" href="https://github.com/SaveEditors/xenon-soft3d" target="_blank" rel="noopener noreferrer" aria-label="View Xenon Soft3D on GitHub">
-          <div class="project-card-top">
-            <span class="project-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3Z"/><path d="m4 7.5 8 4.5 8-4.5M12 12v9"/></svg>
-            </span>
-            <span class="project-platform">LIBXENON</span>
-          </div>
-          <p class="project-category">Graphics research</p>
-          <h3>Xenon Soft3D</h3>
-          <p class="project-card-desc">A compact CPU software rasterizer for Xbox 360 homebrew, with depth testing and native Xenos tiled-framebuffer presentation.</p>
-          <div class="project-tags"><span>Xbox 360</span><span>Software rendering</span><span>libXenon</span></div>
-          <div class="project-card-foot"><span class="card-stars" data-stars-repo="SaveEditors/xenon-soft3d"></span><span class="project-link">View project →</span></div>
-        </a>
-
-        <a class="project-card project-xenasm" href="https://github.com/SaveEditors/xenasm" target="_blank" rel="noopener noreferrer" aria-label="View Xenasm on GitHub">
-          <div class="project-card-top">
-            <span class="project-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><path d="m8.5 7-5 5 5 5M15.5 7l5 5-5 5M13.5 4l-3 16"/></svg>
-            </span>
-            <span class="project-platform">PYTHON</span>
-          </div>
-          <p class="project-category">Shader tooling</p>
-          <h3>Xenasm</h3>
-          <p class="project-card-desc">A lightweight Python toolkit for building and decoding Xenos shader microcode from authoritative instruction layouts.</p>
-          <div class="project-tags"><span>Xenos</span><span>Microcode</span><span>Assembler + decoder</span></div>
-          <div class="project-card-foot"><span class="card-stars" data-stars-repo="SaveEditors/xenasm"></span><span class="project-link">View project →</span></div>
-        </a>
-
-        <a class="project-card project-dominator" href="https://github.com/SaveEditors/dominator-studio" target="_blank" rel="noopener noreferrer" aria-label="View Dominator Studio on GitHub">
-          <div class="project-card-top">
-            <span class="project-icon" aria-hidden="true">
-              <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M8 21h8M12 17v4M7.5 10h3M9 8.5v3M15.7 9h.01M18 11h.01"/></svg>
-            </span>
-            <span class="project-platform">WINDOWS</span>
-          </div>
-          <p class="project-category">Device tooling</p>
-          <h3>Dominator Studio</h3>
-          <p class="project-card-desc">Native Windows desktop and CLI tooling for configuration, backups, write verification, and recovery on the wired CM00085 adapter.</p>
-          <div class="project-tags"><span>Desktop app</span><span>Command line</span><span>USB</span></div>
-          <div class="project-card-foot"><span class="card-stars" data-stars-repo="SaveEditors/dominator-studio"></span><span class="project-link">View project →</span></div>
-        </a>
+    <section id="tools">
+      <div class="wrap">
+        <h2>Other tools</h2>
+        <ul class="list">
+          <li>
+            <a class="title" href="https://github.com/SaveEditors/Xtaf-CLI">Xtaf-CLI</a> <span class="meta">C#</span>
+            <p>Mounts and recovers Xbox 360 FATX, STFS and GDFX images.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/SaveEditors/x360controller">x360controller</a> <span class="meta">Python</span>
+            <p>Controller bridge between Windows, Android and RGH/JTAG consoles.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/SaveEditors/XeCLI-XellFetch">XeCLI-XellFetch</a> <span class="meta">PowerShell</span>
+            <p>XeLL payload that pulls NAND and keyvault data from a console over the network.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/SaveEditors/xenon-soft3d">xenon-soft3d</a> <span class="meta">C, libXenon</span>
+            <p>Software 3D rasterizer for Xbox 360 homebrew, drawing to the Xenos tiled framebuffer.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/SaveEditors/xenasm">xenasm</a> <span class="meta">Python, alpha</span>
+            <p>Builds and decodes Xenos GPU shader microcode. Output is checked against Xenia.</p>
+          </li>
+        </ul>
       </div>
     </section>
 
-    <section class="section" id="contributions">
-      <div class="section-head">
-        <p class="kicker">Upstream milestones</p>
-        <h2>Merged into major open-source projects</h2>
-        <p>Fixes and features contributed to established projects and accepted by their maintainers.</p>
-      </div>
-      <div class="card-grid" id="mergedPrGrid">
-        <a class="card" data-pr-id="rommapp/romm#3945" href="https://github.com/rommapp/romm/pull/3945" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">ROM library</span><span class="badge badge-merged">MERGED</span></div>
-          <h3 class="card-title">RomM</h3>
-          <p class="card-desc">Surface empty platforms in the platform index for the self-hosted ROM manager.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="rommapp/romm"></span><span class="card-num">#3945</span></span><span class="card-link">View PR →</span></div>
-        </a>
-        <a class="card" data-pr-id="libretro/RetroArch#19256" href="https://github.com/libretro/RetroArch/pull/19256" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">Libretro / emulation</span><span class="badge badge-merged">MERGED</span></div>
-          <h3 class="card-title">RetroArch</h3>
-          <p class="card-desc">Fix ZIP member selection when loading content from archives.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="libretro/RetroArch"></span><span class="card-num">#19256</span></span><span class="card-link">View PR →</span></div>
-        </a>
-        <a class="card" data-pr-id="xenia-canary/xenia-canary#1085" href="https://github.com/xenia-canary/xenia-canary/pull/1085" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">Emulator research</span><span class="badge badge-merged">MERGED</span></div>
-          <h3 class="card-title">Xenia Canary</h3>
-          <p class="card-desc">GPU reset defaults derived from retail Xbox 360 hardware research.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="xenia-canary/xenia-canary"></span><span class="card-num">#1085</span></span><span class="card-link">View PR →</span></div>
-        </a>
-        <a class="card" data-pr-id="emoose/idaxex#15" href="https://github.com/emoose/idaxex/pull/15" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">IDA loader</span><span class="badge badge-merged">MERGED</span></div>
-          <h3 class="card-title">IDA XEX</h3>
-          <p class="card-desc">Update the Xbox 360 executable loader for IDA Pro 9.3.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="emoose/idaxex"></span><span class="card-num">#15</span></span><span class="card-link">View PR →</span></div>
-        </a>
-        <a class="card" data-pr-id="zeroKilo/XEXLoaderWV#33" href="https://github.com/zeroKilo/XEXLoaderWV/pull/33" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">Binary analysis</span><span class="badge badge-merged">MERGED</span></div>
-          <h3 class="card-title">XEXLoaderWV</h3>
-          <p class="card-desc">PDB, type-information, and Xbox 360 <code>.pdata</code> parsing fixes for Ghidra.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="zeroKilo/XEXLoaderWV"></span><span class="card-num">#33</span></span><span class="card-link">View PR →</span></div>
-        </a>
-        <a class="card" data-pr-id="kododake/AABrowser#51" href="https://github.com/kododake/AABrowser/pull/51" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">Interface engineering</span><span class="badge badge-merged">MERGED</span></div>
-          <h3 class="card-title">AABrowser</h3>
-          <p class="card-desc">Tabs, themes, scaling, start pages, sessions, and workflow controls.</p>
-          <div class="card-foot"><span class="foot-left"><span class="card-stars" data-stars-repo="kododake/AABrowser"></span><span class="card-num">#51</span></span><span class="card-link">View PR →</span></div>
-        </a>
-      </div>
-      <button class="merged-pr-disclosure" id="mergedPrControl" type="button" aria-controls="mergedPrReveal" aria-expanded="false">
-        <span class="merged-pr-summary-label" id="mergedPrSummaryLabel">View all merged PRs</span>
-        <span class="merged-pr-chevron" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m7 10 5 5 5-5"/></svg></span>
-        <span class="merged-pr-summary-count" id="mergedPrSummaryCount">1 more · 7 total</span>
-      </button>
-      <div class="merged-pr-reveal" id="mergedPrReveal">
-        <div class="card-grid merged-pr-more-grid" id="mergedPrMoreGrid" aria-live="polite"></div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="section-head">
-        <p class="kicker">In review</p>
-        <h2>Open pull requests, live</h2>
-        <p>Contributions currently in review across major open-source projects. Status updates automatically, and accepted work moves into the merged cards above.</p>
-      </div>
-      <div class="card-grid" id="prGrid">
-        <p class="pr-loading">Loading contribution status…</p>
-      </div>
-    </section>
-
-    <section class="support" id="support">
-      <div>
-        <h2>Support continued development</h2>
-        <p>Help fund open-source tooling, console diagnostics, emulator development, and documentation.</p>
-      </div>
-      <div class="support-actions">
-        <a class="btn primary" href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Support the work</a>
+    <section id="upstream">
+      <div class="wrap">
+        <h2>Merged upstream</h2>
+        <ul class="list">
+          <li>
+            <a class="title" href="https://github.com/xenia-canary/xenia-canary/pull/1085">Xenia Canary #1085</a>
+            <p>Xenos GPU register reset defaults, taken from retail Xbox 360 hardware.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/zeroKilo/XEXLoaderWV/pull/33">XEXLoaderWV #33</a>
+            <p>PDB, type information and <code>.pdata</code> parsing fixes in the Ghidra XEX loader.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/emoose/idaxex/pull/15">idaxex #15</a>
+            <p>XEX loader support for IDA Pro 9.3.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/emoose/idaxex/pull/17">idaxex #17</a>
+            <p>Removed unused Qt helpers from the default Visual Studio build.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/libretro/RetroArch/pull/19256">RetroArch #19256</a>
+            <p>Fixed which file is picked when loading content from a ZIP archive.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/rommapp/romm/pull/3945">RomM #3945</a>
+            <p>Platforms with no ROMs now appear in the platform index.</p>
+          </li>
+          <li>
+            <a class="title" href="https://github.com/kododake/AABrowser/pull/51">AABrowser #51</a>
+            <p>Tabs, themes, display scaling and start pages for the Android Auto browser.</p>
+          </li>
+        </ul>
       </div>
     </section>
   </main>
 
-  <footer class="footer">
-    <span>© <span id="year">2026</span> SaveEditors · Open source, GPL-3.0</span>
-    <span>
-      <a href="https://github.com/SaveEditors" target="_blank" rel="noopener noreferrer">GitHub</a>
-      <span class="dot">·</span>
-      <a href="https://github.com/SaveEditors/xecli" target="_blank" rel="noopener noreferrer">XeCLI</a>
-      <span class="dot">·</span>
-      <a href="https://ko-fi.com/saveeditors" target="_blank" rel="noopener noreferrer">Ko-fi</a>
-    </span>
+  <footer>
+    <div class="wrap">
+      <span>© 2026 SaveEditors</span>
+      <span><a href="https://github.com/SaveEditors">GitHub</a> · <a href="https://x.com/SaveEditors">X</a> · <a href="https://ko-fi.com/saveeditors">Ko-fi</a></span>
+    </div>
   </footer>
-
-  <script>
-    "use strict";
-    const htmlEscape = (value) => String(value ?? "")
-      .replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;").replaceAll('"', "&quot;");
-
-    function startAmbientSparkles() {
-      const canvas = document.getElementById("ambientSparkles");
-      const context = canvas?.getContext("2d");
-      if (!canvas || !context) return;
-
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      const palette = [
-        [218, 242, 255],
-        [92, 200, 245],
-        [111, 224, 163],
-        [255, 193, 120]
-      ];
-      let width = 0;
-      let height = 0;
-      let particles = [];
-      let animationFrame = 0;
-      let resizeTimer = 0;
-      let previousTime = 0;
-      const minimumFrameTime = 1000 / 30;
-
-      const randomBetween = (minimum, maximum) => minimum + Math.random() * (maximum - minimum);
-
-      const createParticle = (index) => {
-        const depth = randomBetween(.16, 1);
-        const sparkle = index % 19 === 0;
-        const firefly = !sparkle && index % 4 === 0;
-        const paletteIndex = index % 12 < 7 ? 0 : index % 12 < 10 ? 1 : index % 12 === 10 ? 2 : 3;
-        const color = palette[paletteIndex];
-        const direction = Math.random() < .5 ? -1 : 1;
-        return {
-          x: Math.random() * width,
-          baseY: Math.random() * height,
-          radius: sparkle
-            ? randomBetween(1.3, 2.5) * (.72 + depth * .4)
-            : firefly
-              ? randomBetween(.78, 1.7) * (.72 + depth * .46)
-              : randomBetween(.34, .94) * (.68 + depth * .54),
-          halo: sparkle ? randomBetween(9, 16) : firefly ? randomBetween(7, 14) : randomBetween(1.5, 4.5),
-          color,
-          alpha: sparkle ? randomBetween(.44, .7) : firefly ? randomBetween(.3, .58) : randomBetween(.18, .38),
-          phase: randomBetween(0, Math.PI * 2),
-          pulseRate: sparkle ? randomBetween(.00042, .00078) : randomBetween(.00016, .00042),
-          blinkRate: randomBetween(.00007, .00018),
-          driftRate: randomBetween(.00012, .00038),
-          drift: randomBetween(5, 24) * (.45 + depth * .78),
-          velocityX: direction * randomBetween(7 + depth * 7, 18 + depth * 25),
-          depth,
-          sparkle,
-          firefly
-        };
-      };
-
-      const drawParticle = (particle, time, still = false) => {
-        const pulseWave = still ? .58 : (Math.sin(time * particle.pulseRate + particle.phase) + 1) / 2;
-        const blinkWave = still ? .7 : (Math.sin(time * particle.blinkRate + particle.phase * 1.7) + 1) / 2;
-        const pulse = particle.sparkle ? Math.pow(pulseWave, 6) : particle.firefly ? .25 + pulseWave * .75 : .62 + pulseWave * .38;
-        const blink = particle.firefly || particle.sparkle ? .18 + Math.pow(blinkWave, 1.7) * .82 : .72 + blinkWave * .28;
-        const alpha = particle.alpha * (.26 + pulse * .74) * blink;
-        const y = particle.baseY + (still ? 0 : Math.sin(time * particle.driftRate + particle.phase) * particle.drift
-          + Math.cos(time * particle.driftRate * .46 + particle.phase) * particle.drift * .28);
-        const x = particle.x;
-        const [red, green, blue] = particle.color;
-
-        context.save();
-        context.globalCompositeOperation = "lighter";
-        context.shadowColor = `rgba(${red},${green},${blue},${Math.min(.85, alpha + .2)})`;
-        context.shadowBlur = particle.halo * (.55 + pulse * .7);
-
-        if (particle.sparkle) {
-          const reach = particle.radius * (1.5 + pulse * 2.3);
-          context.strokeStyle = `rgba(${red},${green},${blue},${Math.min(.72, alpha + .12)})`;
-          context.lineWidth = .65;
-          context.beginPath();
-          context.moveTo(x - reach, y);
-          context.lineTo(x + reach, y);
-          context.moveTo(x, y - reach * 1.6);
-          context.lineTo(x, y + reach * 1.6);
-          context.stroke();
-        }
-
-        context.fillStyle = `rgba(${red},${green},${blue},${Math.min(.88, alpha + (particle.firefly || particle.sparkle ? .14 : .04))})`;
-        context.beginPath();
-        context.arc(x, y, particle.radius * (.76 + pulse * .38), 0, Math.PI * 2);
-        context.fill();
-        context.restore();
-      };
-
-      const draw = (time = 0, still = false) => {
-        context.clearRect(0, 0, width, height);
-        particles.forEach((particle) => drawParticle(particle, time, still));
-      };
-
-      const resize = () => {
-        width = window.innerWidth;
-        height = window.innerHeight;
-        const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.75);
-        canvas.width = Math.round(width * pixelRatio);
-        canvas.height = Math.round(height * pixelRatio);
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-        context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-        const areaCount = Math.round((width * height) / 9000);
-        const maximum = width < 640 ? 72 : 190;
-        const count = Math.max(width < 640 ? 42 : 84, Math.min(maximum, areaCount));
-        const renderedCount = motionQuery.matches ? Math.max(10, Math.ceil(count * .22)) : count;
-        particles = Array.from({ length: renderedCount }, (_, index) => createParticle(index));
-        draw(performance.now(), motionQuery.matches);
-      };
-
-      const animate = (time) => {
-        if (document.hidden || motionQuery.matches) {
-          animationFrame = 0;
-          return;
-        }
-        if (previousTime && time - previousTime < minimumFrameTime) {
-          animationFrame = requestAnimationFrame(animate);
-          return;
-        }
-        const elapsed = Math.min(40, previousTime ? time - previousTime : 16) / 1000;
-        previousTime = time;
-        particles.forEach((particle) => {
-          particle.x += particle.velocityX * elapsed;
-          const margin = particle.halo + particle.drift + 6;
-          if (particle.velocityX < 0 && particle.x < -margin) {
-            particle.x = width + margin;
-            particle.baseY = Math.random() * height;
-            particle.phase = randomBetween(0, Math.PI * 2);
-          }
-          if (particle.velocityX > 0 && particle.x > width + margin) {
-            particle.x = -margin;
-            particle.baseY = Math.random() * height;
-            particle.phase = randomBetween(0, Math.PI * 2);
-          }
-        });
-        draw(time);
-        animationFrame = requestAnimationFrame(animate);
-      };
-
-      const start = () => {
-        if (animationFrame || document.hidden || motionQuery.matches) return;
-        previousTime = 0;
-        animationFrame = requestAnimationFrame(animate);
-      };
-
-      const stop = () => {
-        if (animationFrame) cancelAnimationFrame(animationFrame);
-        animationFrame = 0;
-      };
-
-      const handleMotionChange = () => {
-        stop();
-        resize();
-        if (!motionQuery.matches) start();
-      };
-
-      window.addEventListener("resize", () => {
-        window.clearTimeout(resizeTimer);
-        resizeTimer = window.setTimeout(resize, 140);
-      }, { passive: true });
-      document.addEventListener("visibilitychange", () => {
-        if (document.hidden) stop();
-        else start();
-      });
-      motionQuery.addEventListener("change", handleMotionChange);
-      resize();
-      start();
-    }
-
-    const terminalDemos = [
-      { command: "rgh status", result: "✓ connected", note: "· XBDM · kernel 2.0.17559.0" },
-      { command: "rgh modules list", result: "default.xex", note: "· base 0x82000000" },
-      { command: "rgh screenshot --out .\\capture.png", result: "✓ screenshot saved", note: "· capture.png" },
-      { command: "rgh debug watch --duration 5 --max 1", result: "break addr=0x82001234", note: "· thread=0xFB000008" },
-      { command: "rgh xex dump --out .\\default.xex", result: "✓ XEX exported", note: "· default.xex" },
-      { command: "rgh mem hexdump --addr 0x82001234 --size 0x20", result: "82001234  7C 08 02 A6", note: "· PowerPC" },
-      { command: "rgh threads context --id 0xFB000008", result: "cia=0x82001234", note: "· lr=0x8210A6F8" },
-      { command: "rgh ftp list --path /Hdd1/", result: "✓ 14 entries", note: "· /Hdd1/" },
-      { command: "rgh jrpc2 temps", result: "CPU 54°C · GPU 52°C", note: "· EDRAM 49°C" },
-      { command: "rgh health", result: "✓ XBDM · ✓ memory", note: "· ✓ storage" },
-      { command: "rgh smc version", result: "SMC version 2.3", note: "· read-only probe" },
-      { command: "rgh fs list --path Hdd:\\", result: "Content · Games · Cache", note: "· Hdd:\\" },
-      { command: "rgh module info --name default.xex", result: "base=0x82000000", note: "· default.xex" },
-      { command: "rgh debug stop", result: "Execution stopped.", note: "· XBDM" },
-      { command: "rgh debug go", result: "Execution resumed.", note: "· XBDM" }
-    ];
-
-    function startXeCliTerminalDemo() {
-      const body = document.getElementById("xecliTerminalBody");
-      if (!body) return;
-      const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-      let runToken = 0;
-      let isVisible = true;
-      let bag = [];
-      let lastIndex = 3;
-
-      const createEntry = (demoIndex, completed = true) => {
-        const demo = terminalDemos[demoIndex];
-        const entry = document.createElement("div");
-        entry.className = completed ? "terminal-entry" : "terminal-entry terminal-entry-new";
-        entry.dataset.demoIndex = String(demoIndex);
-
-        const commandLine = document.createElement("span");
-        commandLine.className = "l";
-        const prompt = document.createElement("span");
-        prompt.className = "cmd";
-        prompt.textContent = "$";
-        const value = document.createElement("span");
-        value.className = "terminal-value";
-        value.textContent = completed ? demo.command : "";
-        commandLine.append(prompt, document.createTextNode(" "), value);
-
-        const cursor = document.createElement("span");
-        cursor.className = "cur";
-        cursor.setAttribute("aria-hidden", "true");
-        if (!completed) commandLine.append(cursor);
-        entry.append(commandLine);
-
-        if (completed) {
-          const resultLine = document.createElement("span");
-          resultLine.className = "l";
-          const result = document.createElement("span");
-          result.className = "ok";
-          result.textContent = demo.result;
-          const note = document.createElement("span");
-          note.className = "dim";
-          note.textContent = ` ${demo.note}`;
-          resultLine.append(result, note);
-          entry.append(resultLine);
-        }
-
-        return { entry, value, cursor };
-      };
-
-      const renderSeed = () => {
-        body.replaceChildren(...[0, 1, 2, 3].map((index) => createEntry(index).entry));
-      };
-
-      const shuffle = (values) => {
-        for (let index = values.length - 1; index > 0; index -= 1) {
-          const swapIndex = Math.floor(Math.random() * (index + 1));
-          [values[index], values[swapIndex]] = [values[swapIndex], values[index]];
-        }
-        return values;
-      };
-
-      const nextDemoIndex = () => {
-        if (!bag.length) {
-          bag = shuffle(terminalDemos.map((_, index) => index));
-          if (bag[0] === lastIndex && bag.length > 1) [bag[0], bag[1]] = [bag[1], bag[0]];
-        }
-        const displayed = new Set([...body.children].map((entry) => Number(entry.dataset.demoIndex)));
-        const availableIndex = bag.findIndex((index) => !displayed.has(index));
-        const [demoIndex] = bag.splice(availableIndex >= 0 ? availableIndex : 0, 1);
-        lastIndex = demoIndex;
-        return demoIndex;
-      };
-
-      const wait = (milliseconds, token) => new Promise((resolve) => {
-        window.setTimeout(() => resolve(token === runToken), milliseconds);
-      });
-
-      const removeOldestEntry = async (token) => {
-        const oldest = body.firstElementChild;
-        if (!oldest || body.childElementCount < 4) return true;
-        if (typeof oldest.animate === "function") {
-          oldest.animate(
-            [{ opacity: 1, transform: "translateY(0)" }, { opacity: 0, transform: "translateY(-5px)" }],
-            { duration: 150, easing: "ease-in", fill: "forwards" }
-          );
-          if (!await wait(150, token)) return false;
-        }
-        oldest.remove();
-        return token === runToken;
-      };
-
-      const appendTypedEntry = async (demoIndex, token) => {
-        const demo = terminalDemos[demoIndex];
-        const { entry, value, cursor } = createEntry(demoIndex, false);
-        body.append(entry);
-        body.scrollLeft = 0;
-        for (let index = 1; index <= demo.command.length; index += 1) {
-          const delay = demo.command[index - 1] === " " ? 34 : 21;
-          if (!await wait(delay, token)) return false;
-          value.textContent = demo.command.slice(0, index);
-        }
-        if (!await wait(140, token)) return false;
-        cursor.remove();
-
-        const resultLine = document.createElement("span");
-        resultLine.className = "l";
-        const result = document.createElement("span");
-        result.className = "ok";
-        result.textContent = demo.result;
-        const note = document.createElement("span");
-        note.className = "dim";
-        note.textContent = ` ${demo.note}`;
-        resultLine.append(result, note);
-        entry.append(resultLine);
-        if (typeof resultLine.animate === "function") {
-          resultLine.animate(
-            [{ opacity: 0, transform: "translateY(3px)" }, { opacity: 1, transform: "translateY(0)" }],
-            { duration: 180, easing: "ease-out" }
-          );
-        }
-        return true;
-      };
-
-      const runDemo = async (token) => {
-        if (!await wait(1600, token)) return;
-        while (token === runToken && isVisible && !document.hidden && !motionQuery.matches) {
-          const cycleStarted = performance.now();
-          const demoIndex = nextDemoIndex();
-          if (!await removeOldestEntry(token)) return;
-          if (!await appendTypedEntry(demoIndex, token)) return;
-          const remaining = Math.max(3000, 5200 - (performance.now() - cycleStarted));
-          if (!await wait(remaining, token)) return;
-        }
-      };
-
-      const restart = () => {
-        runToken += 1;
-        const token = runToken;
-        if (motionQuery.matches) {
-          renderSeed();
-          return;
-        }
-        if (isVisible && !document.hidden) runDemo(token);
-      };
-
-      renderSeed();
-      document.addEventListener("visibilitychange", restart);
-      if (typeof motionQuery.addEventListener === "function") motionQuery.addEventListener("change", restart);
-      else if (typeof motionQuery.addListener === "function") motionQuery.addListener(restart);
-      if ("IntersectionObserver" in window) {
-        const observer = new IntersectionObserver((entries) => {
-          isVisible = entries.some((entry) => entry.isIntersecting);
-          restart();
-        }, { threshold: 0.2 });
-        observer.observe(body);
-      }
-      restart();
-    }
-
-    const starSvg = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>';
-
-    function formatStars(n) {
-      if (typeof n !== "number" || isNaN(n)) return null;
-      if (n < 1000) return String(n);
-      return (Math.round(n / 100) / 10).toString().replace(/\.0$/, "") + "k";
-    }
-
-    /* ---- repo star counts (cached 6h) ---- */
-    const repoStarsCacheKey = "saveeditors-repo-stars-v1";
-    const repoStarsTtlMs = 6 * 60 * 60 * 1000;
-
-    function readRepoStarsCache() {
-      try { return JSON.parse(localStorage.getItem(repoStarsCacheKey) || "{}") || {}; }
-      catch { return {}; }
-    }
-    function writeRepoStarsCache(cache) {
-      try { localStorage.setItem(repoStarsCacheKey, JSON.stringify(cache)); } catch {}
-    }
-    function cacheRepoStars(repo, stars) {
-      if (typeof stars !== "number") return;
-      const cache = readRepoStarsCache();
-      cache[repo] = { stars, ts: Date.now() };
-      writeRepoStarsCache(cache);
-    }
-    async function fetchRepoStars(repo) {
-      const cache = readRepoStarsCache();
-      const cached = cache[repo];
-      if (cached && typeof cached.stars === "number" && Date.now() - cached.ts < repoStarsTtlMs) {
-        return cached.stars;
-      }
-      try {
-        const res = await fetch(`https://api.github.com/repos/${repo}`, {
-          headers: { Accept: "application/vnd.github+json" }
-        });
-        if (!res.ok) throw new Error("repo request failed");
-        const data = await res.json();
-        const stars = data.stargazers_count;
-        if (typeof stars === "number") { cacheRepoStars(repo, stars); return stars; }
-        return cached ? cached.stars : null;
-      } catch {
-        return cached ? cached.stars : null;
-      }
-    }
-
-    async function loadCardStars(root = document) {
-      const els = root.querySelectorAll(".card-stars[data-stars-repo]");
-      await Promise.all([...els].map(async (el) => {
-        const stars = await fetchRepoStars(el.dataset.starsRepo);
-        const label = formatStars(stars);
-        if (label == null) { el.remove(); return; }
-        el.innerHTML = `${starSvg} ${label}`;
-        el.title = `${stars.toLocaleString()} GitHub stars`;
-      }));
-    }
-
-    async function loadXecliStars() {
-      const el = document.getElementById("xecliStars");
-      if (!el) return;
-      const stars = await fetchRepoStars("SaveEditors/xecli");
-      const label = formatStars(stars);
-      if (label == null) { el.textContent = "—"; return; }
-      el.innerHTML = `<svg class="star" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>${label}`;
-      el.title = `${stars.toLocaleString()} GitHub stars`;
-    }
-
-    const contributions = [
-      { repo: "phaserjs/phaser",     num: 7343,  name: "Phaser",    label: "Web game engine",     blurb: "Preserve global loader credentials across asset loads.", fallback: "review" },
-      { repo: "phaserjs/phaser",     num: 7342,  name: "Phaser",    label: "Web game engine",     blurb: "Fix ScaleManager scroll bounds after page scrolling.",   fallback: "review" },
-      { repo: "xenia-project/xenia", num: 2357,  name: "Xenia",     label: "Xbox 360 emulation",  blurb: "Handle content deletion errors in XAM.",                 fallback: "review" },
-      { repo: "bfirsh/jsnes",        num: 785,   name: "JSNES",     label: "NES emulation",       blurb: "Fix SUROM PRG bank selection.",                          fallback: "review" },
-      { repo: "emoose/idaxex",       num: 19,    name: "IDA XEX",   label: "IDA loader",          blurb: "Update the loader for IDA Pro 9.4.",                     fallback: "review" }
-    ];
-
-    const mergedPrBatchSize = 3;
-    const mergedPrRecords = [
-      {
-        repo: "emoose/idaxex",
-        num: 17,
-        name: "IDA XEX",
-        label: "Build integration",
-        blurb: "Correct Visual Studio build behavior by excluding unused Qt helpers.",
-        url: "https://github.com/emoose/idaxex/pull/17"
-      }
-    ];
-    let mergedPrRevealedCount = 0;
-    let mergedPrAnimating = false;
-    let mergedPrAnimationTimer = 0;
-
-    function mergedPrId(item) {
-      return `${item.repo}#${item.num}`;
-    }
-
-    function getFeaturedMergedIds() {
-      return new Set([...document.querySelectorAll("#mergedPrGrid .card[data-pr-id]")].map((card) => card.dataset.prId));
-    }
-
-    function mergedPrCardMarkup(item, revealIndex) {
-      const starLabel = formatStars(item.stars);
-      const starsHtml = starLabel != null
-        ? `<span class="card-stars" title="${htmlEscape(item.stars.toLocaleString())} GitHub stars">${starSvg} ${starLabel}</span>`
-        : `<span class="card-stars" data-stars-repo="${htmlEscape(item.repo)}"></span>`;
-      return `<a class="card merged-pr-card" style="--reveal-index:${revealIndex}" data-pr-id="${htmlEscape(mergedPrId(item))}" href="${htmlEscape(item.url)}" target="_blank" rel="noopener noreferrer">
-        <div class="card-top"><span class="card-kicker">${htmlEscape(item.label)}</span><span class="badge badge-merged">MERGED</span></div>
-        <h3 class="card-title">${htmlEscape(item.name)}</h3>
-        <p class="card-desc">${htmlEscape(item.blurb || item.title)}</p>
-        <div class="card-foot"><span class="foot-left">${starsHtml}<span class="card-num">#${item.num}</span></span><span class="card-link">View PR →</span></div>
-      </a>`;
-    }
-
-    function updateMergedPrCount() {
-      const featuredCount = getFeaturedMergedIds().size;
-      const total = featuredCount + mergedPrRecords.length;
-      const remaining = mergedPrRecords.length - mergedPrRevealedCount;
-      const shown = featuredCount + mergedPrRevealedCount;
-      const control = document.getElementById("mergedPrControl");
-      const label = document.getElementById("mergedPrSummaryLabel");
-      const countLabel = document.getElementById("mergedPrSummaryCount");
-      const statMerged = document.getElementById("statMerged");
-      if (statMerged) statMerged.textContent = String(total);
-      if (!control || !label || !countLabel) return;
-
-      control.hidden = mergedPrRecords.length === 0;
-      control.setAttribute("aria-expanded", String(mergedPrRevealedCount > 0));
-      control.classList.toggle("is-exhausted", mergedPrRevealedCount > 0 && remaining === 0);
-
-      if (mergedPrRevealedCount > 0 && remaining === 0) {
-        label.textContent = "Hide additional PRs";
-        countLabel.textContent = `${shown} of ${total} shown`;
-        control.setAttribute("aria-label", "Hide additional merged pull requests");
-      } else if (mergedPrRevealedCount === 0) {
-        label.textContent = "View all merged PRs";
-        countLabel.textContent = `${remaining} more · ${total} total`;
-        control.setAttribute("aria-label", `View merged pull requests; ${remaining} more available`);
-      } else {
-        const nextCount = Math.min(mergedPrBatchSize, remaining);
-        label.textContent = `View next ${nextCount} merged ${nextCount === 1 ? "PR" : "PRs"}`;
-        countLabel.textContent = `${shown} of ${total} shown`;
-        control.setAttribute("aria-label", `View the next ${nextCount} merged pull ${nextCount === 1 ? "request" : "requests"}`);
-      }
-    }
-
-    function finishMergedPrAnimation(callback) {
-      window.clearTimeout(mergedPrAnimationTimer);
-      mergedPrAnimationTimer = window.setTimeout(() => {
-        callback();
-        mergedPrAnimating = false;
-      }, 780);
-    }
-
-    function collapseMergedPrCards() {
-      const reveal = document.getElementById("mergedPrReveal");
-      const grid = document.getElementById("mergedPrMoreGrid");
-      if (!reveal || !grid) return;
-      const complete = () => {
-        grid.replaceChildren();
-        mergedPrRevealedCount = 0;
-        reveal.style.height = "0px";
-        updateMergedPrCount();
-      };
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        complete();
-        return;
-      }
-      mergedPrAnimating = true;
-      reveal.style.height = `${reveal.getBoundingClientRect().height}px`;
-      reveal.getBoundingClientRect();
-      requestAnimationFrame(() => { reveal.style.height = "0px"; });
-      finishMergedPrAnimation(complete);
-    }
-
-    function revealNextMergedPrBatch() {
-      if (mergedPrAnimating) return;
-      const reveal = document.getElementById("mergedPrReveal");
-      const grid = document.getElementById("mergedPrMoreGrid");
-      if (!reveal || !grid) return;
-      const remaining = mergedPrRecords.length - mergedPrRevealedCount;
-      if (remaining === 0 && mergedPrRevealedCount > 0) {
-        collapseMergedPrCards();
-        return;
-      }
-
-      const nextItems = mergedPrRecords.slice(mergedPrRevealedCount, mergedPrRevealedCount + mergedPrBatchSize);
-      if (!nextItems.length) return;
-      const startHeight = reveal.getBoundingClientRect().height;
-      reveal.style.height = `${startHeight}px`;
-      grid.insertAdjacentHTML("beforeend", nextItems.map(mergedPrCardMarkup).join(""));
-      mergedPrRevealedCount += nextItems.length;
-      updateMergedPrCount();
-      loadCardStars(grid);
-
-      if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-        reveal.style.height = "auto";
-        return;
-      }
-      mergedPrAnimating = true;
-      reveal.getBoundingClientRect();
-      requestAnimationFrame(() => { reveal.style.height = `${reveal.scrollHeight}px`; });
-      finishMergedPrAnimation(() => { reveal.style.height = "auto"; });
-    }
-
-    function appendMergedContribution(item) {
-      const prId = mergedPrId(item);
-      if (getFeaturedMergedIds().has(prId) || mergedPrRecords.some((record) => mergedPrId(record) === prId)) return;
-      const record = {
-        ...item,
-        blurb: item.blurb || item.title,
-        url: item.url || `https://github.com/${item.repo}/pull/${item.num}`
-      };
-      if (mergedPrRevealedCount > 0) mergedPrRecords.push(record);
-      else mergedPrRecords.unshift(record);
-      updateMergedPrCount();
-    }
-
-    const prStatusCacheKey = "saveeditors-pr-status-v3";
-    const prStatusTtlMs = 30 * 60 * 1000;
-
-    function readPrStatusCache() {
-      try { return JSON.parse(localStorage.getItem(prStatusCacheKey) || "{}") || {}; }
-      catch { return {}; }
-    }
-    function writePrStatusCache(cache) {
-      try { localStorage.setItem(prStatusCacheKey, JSON.stringify(cache)); } catch {}
-    }
-
-    async function fetchPrStatus(item) {
-      const cacheId = `${item.repo}#${item.num}`;
-      const webUrl = `https://github.com/${item.repo}/pull/${item.num}`;
-      const cache = readPrStatusCache();
-      const cached = cache[cacheId];
-      if (cached && cached.status && Date.now() - cached.ts < prStatusTtlMs) {
-        return { status: cached.status, url: cached.url || webUrl, stars: cached.stars, title: cached.title, mergedAt: cached.mergedAt };
-      }
-      try {
-        const res = await fetch(`https://api.github.com/repos/${item.repo}/pulls/${item.num}`, {
-          headers: { Accept: "application/vnd.github+json" }
-        });
-        if (!res.ok) throw new Error("pr status request failed");
-        const pr = await res.json();
-        let status;
-        if (pr.merged) status = "merged";
-        else if (pr.state === "closed") status = "closed";
-        else status = "review";
-        const url = pr.html_url || webUrl;
-        const stars = pr.base && pr.base.repo ? pr.base.repo.stargazers_count : undefined;
-        const title = pr.title || item.blurb;
-        const mergedAt = pr.merged_at || null;
-        if (typeof stars === "number") cacheRepoStars(item.repo, stars);
-        cache[cacheId] = { status, url, stars, title, mergedAt, ts: Date.now() };
-        writePrStatusCache(cache);
-        return { status, url, stars, title, mergedAt };
-      } catch {
-        return { status: item.fallback || "review", url: webUrl, stars: undefined, title: item.blurb, mergedAt: null };
-      }
-    }
-
-    async function loadContributions() {
-      const grid = document.getElementById("prGrid");
-      if (!grid) return;
-      const results = await Promise.all(contributions.map(async (item) => {
-        const { status, url, stars, title, mergedAt } = await fetchPrStatus(item);
-        return { ...item, status, url, stars, title, mergedAt };
-      }));
-      results.filter((result) => result.status === "merged").forEach(appendMergedContribution);
-      const visible = results.filter((result) => result.status === "review");
-
-      const statReview = document.getElementById("statReview");
-      if (statReview) statReview.textContent = String(visible.length);
-
-      if (!visible.length) {
-        const section = grid.closest(".section");
-        if (section) section.remove();
-        return;
-      }
-      grid.innerHTML = visible.map((r) => {
-        const starLabel = formatStars(r.stars);
-        const starsHtml = starLabel != null
-          ? `<span class="card-stars" title="${htmlEscape(r.stars.toLocaleString())} GitHub stars">${starSvg} ${starLabel}</span>`
-          : "";
-        return `<a class="card" href="${htmlEscape(r.url)}" target="_blank" rel="noopener noreferrer">
-          <div class="card-top"><span class="card-kicker">${htmlEscape(r.label)}</span><span class="badge badge-review">IN REVIEW</span></div>
-          <h3 class="card-title">${htmlEscape(r.name)}</h3>
-          <p class="card-desc">${htmlEscape(r.blurb)}</p>
-          <div class="card-foot"><span class="foot-left">${starsHtml}<span class="card-num">#${r.num}</span></span><span class="card-link">Review →</span></div>
-        </a>`;
-      }).join("");
-    }
-
-    document.getElementById("year").textContent = new Date().getFullYear();
-    document.getElementById("mergedPrControl")?.addEventListener("click", revealNextMergedPrBatch);
-    updateMergedPrCount();
-    startAmbientSparkles();
-    startXeCliTerminalDemo();
-    loadXecliStars();
-    loadCardStars();
-    loadContributions();
-    window.setInterval(() => {
-      if (!document.hidden) loadContributions();
-    }, prStatusTtlMs + 5000);
-  </script>
 </body>
 </html>
